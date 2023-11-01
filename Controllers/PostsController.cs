@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Models;
@@ -28,6 +28,78 @@ namespace SimpleBlog.Controllers
         public IActionResult NewPost()
         {
             return View();
+        }
+
+        public IActionResult ViewPost(int id)
+        {
+            PostModel post = GetPostById(id);
+            Console.WriteLine(post.Title);
+            PostViewModel postViewModel = new()
+            {
+                Post = post
+            };
+            return View(postViewModel);
+        }
+
+        public IActionResult EditPost(int id)
+        {
+            PostModel post = GetPostById(id);
+            PostViewModel postViewModel = new()
+            {
+                Post = post
+            };
+            return View(postViewModel);
+        }
+
+        private PostModel GetPostById(int id)
+        {
+            PostModel post = new();
+
+            using (SqliteConnection connection = new SqliteConnection(_configuration.GetConnectionString("BlogDataContext")))
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    connection.Open();
+                    command.CommandText = $"SELECT * FROM post Where Id = '{id}'";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                DateTimeFormatInfo dateTimeFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
+                                string dateFormat = dateTimeFormatInfo.ShortDatePattern;
+                                string timeFormat = dateTimeFormatInfo.LongTimePattern;
+
+                                string format = $"{dateFormat} H{timeFormat}";
+                                DateTime.TryParseExact(reader.GetString(3),
+                                                       format,
+                                                       CultureInfo.InvariantCulture,
+                                                       DateTimeStyles.None,
+                                                       out var parsedCreatedAt);
+
+                                DateTime.TryParseExact(reader.GetString(3),
+                                                       format,
+                                                       CultureInfo.InvariantCulture,
+                                                       DateTimeStyles.None,
+                                                       out var parsedUpdatedAt);
+                                post.Id = reader.GetInt32(0);
+                                post.Title = reader.GetString(1);
+                                post.Body = reader.GetString(2);
+                                post.CreatedAt = parsedCreatedAt;
+                                post.UpdatedAt = parsedUpdatedAt;
+
+                                return post;
+                            }
+                        }
+                        else
+                            return post;
+                    };
+                }
+            }
+
+            return post;
         }
 
         internal PostViewModel GetAllPosts()
@@ -103,6 +175,34 @@ namespace SimpleBlog.Controllers
                 {
                     connection.Open();
                     command.CommandText = $"INSERT INTO post (Title, Body, CreatedAt, UpdatedAt) VALUES ('{post.Title}', '{post.Body}', '{post.CreatedAt}', '{post.UpdatedAt}')";
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public ActionResult Update(PostModel post)
+        {
+            post.UpdatedAt = DateTime.Now;
+
+            using (SqliteConnection connection = new SqliteConnection(_configuration.GetConnectionString("BlogDataContext")))
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    connection.Open();
+                    command.CommandText = $"UPDATE post SET Title = " +
+                                          $"'{post.Title}', " +
+                                          $"Body = '{post.Body}', " +
+                                          $"UpdatedAt = '{post.UpdatedAt}' " +
+                                          $"WHERE Id = '{post.Id}'";
                     try
                     {
                         command.ExecuteNonQuery();
