@@ -35,7 +35,6 @@ namespace SimpleBlog.Controllers
         public IActionResult ViewPost(int id)
         {
             PostModel post = GetPostById(id);
-            Console.WriteLine(post.Title);
             PostViewModel postViewModel = new()
             {
                 Post = post
@@ -75,7 +74,6 @@ namespace SimpleBlog.Controllers
                                 string timeFormat = dateTimeFormatInfo.LongTimePattern;
 
                                 string format = $"{dateFormat} H{timeFormat}";
-                                Console.WriteLine(format);
                                 DateTime.TryParseExact(reader.GetString(3),
                                                        format,
                                                        CultureInfo.InvariantCulture,
@@ -90,8 +88,8 @@ namespace SimpleBlog.Controllers
                                 post.Id = reader.GetInt32(0);
                                 post.Title = reader.GetString(1);
                                 post.Body = reader.GetString(2);
-                                post.CreatedAt = reader.GetDateTime(3);
-                                post.UpdatedAt = reader.GetDateTime(4);
+                                post.CreatedAt = parsedCreatedAt;
+                                post.UpdatedAt = parsedUpdatedAt;
 
                                 return post;
                             }
@@ -120,7 +118,6 @@ namespace SimpleBlog.Controllers
                     {
                         if (reader.HasRows)
                         {
-                            Console.WriteLine($"reader has rows");
                             while (reader.Read())
                             {
                                 DateTimeFormatInfo dateTimeFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
@@ -228,7 +225,6 @@ namespace SimpleBlog.Controllers
             {
                 using (var command = connection.CreateCommand())
                 {
-                    Console.WriteLine("Trying to delete");
                     connection.Open();
                     command.CommandText = $"DELETE from post WHERE Id = '{id}'";
                     command.ExecuteNonQuery();
