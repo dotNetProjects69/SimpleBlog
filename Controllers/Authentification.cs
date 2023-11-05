@@ -14,9 +14,15 @@ namespace SimpleBlog.Controllers
 
         }
 
-        public IActionResult SignIn()
+        public IActionResult SignUp()
         {
             return View();
+        }
+
+        public IActionResult Register()
+        {
+            // In future we must go to posts for this account
+            return RedirectToAction("Index", "Home");
         }
     }
 }

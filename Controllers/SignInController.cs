@@ -1,6 +1,6 @@
 ﻿namespace SimpleBlog.Controllers
 {
-    public class SignUpController
+    public class SignInController
     {
     }
 }
