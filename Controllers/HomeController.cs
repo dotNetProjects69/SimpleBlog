@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Models.ViewModels;
 using System.Diagnostics;
-using SimpleBlog.Models.ViewModels;
 
 namespace SimpleBlog.Controllers
 {
@@ -29,5 +28,8 @@ namespace SimpleBlog.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+        
     }
 }
