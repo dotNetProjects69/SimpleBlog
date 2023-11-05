@@ -4,6 +4,8 @@ using Microsoft.Data.Sqlite;
 using SimpleBlog.Models;
 using SimpleBlog.Models.ViewModels;
 using System.Globalization;
+using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 
 namespace SimpleBlog.Controllers
 {
@@ -55,7 +57,7 @@ namespace SimpleBlog.Controllers
         {
             PostModel post = new();
 
-            using (SqliteConnection connection = new SqliteConnection(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new(_configuration.GetConnectionString("BlogDataContext")))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -73,6 +75,7 @@ namespace SimpleBlog.Controllers
                                 string timeFormat = dateTimeFormatInfo.LongTimePattern;
 
                                 string format = $"{dateFormat} H{timeFormat}";
+                                Console.WriteLine(format);
                                 DateTime.TryParseExact(reader.GetString(3),
                                                        format,
                                                        CultureInfo.InvariantCulture,
@@ -87,8 +90,8 @@ namespace SimpleBlog.Controllers
                                 post.Id = reader.GetInt32(0);
                                 post.Title = reader.GetString(1);
                                 post.Body = reader.GetString(2);
-                                post.CreatedAt = parsedCreatedAt;
-                                post.UpdatedAt = parsedUpdatedAt;
+                                post.CreatedAt = reader.GetDateTime(3);
+                                post.UpdatedAt = reader.GetDateTime(4);
 
                                 return post;
                             }
@@ -102,11 +105,11 @@ namespace SimpleBlog.Controllers
             return post;
         }
 
-        internal PostViewModel GetAllPosts()
+        public PostViewModel GetAllPosts()
         {
             List<PostModel> postList = new();
 
-            using (SqliteConnection connection = new SqliteConnection(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new(_configuration.GetConnectionString("BlogDataContext")))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -169,7 +172,7 @@ namespace SimpleBlog.Controllers
             post.CreatedAt = DateTime.Now;
             post.UpdatedAt = DateTime.Now;
 
-            using (SqliteConnection connection = new SqliteConnection(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new(_configuration.GetConnectionString("BlogDataContext")))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -193,7 +196,7 @@ namespace SimpleBlog.Controllers
         {
             post.UpdatedAt = DateTime.Now;
 
-            using (SqliteConnection connection = new SqliteConnection(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new (_configuration.GetConnectionString("BlogDataContext")))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -216,5 +219,25 @@ namespace SimpleBlog.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public JsonResult Delete(int id)
+        {
+            using (SqliteConnection connection =
+                new (_configuration.GetConnectionString("BlogDataContext")))
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    Console.WriteLine("Trying to delete");
+                    connection.Open();
+                    command.CommandText = $"DELETE from post WHERE Id = '{id}'";
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            return Json(new object { });
+        }
+
     }
+
 }

@@ -3,8 +3,8 @@
     public class PostModel
     {
         private int _id;
-        private string _title;
-        private string _body;
+        private string _title = string.Empty;
+        private string _body = string.Empty;
         private DateTime _createdAt;
         private DateTime _updatedAt;
 
