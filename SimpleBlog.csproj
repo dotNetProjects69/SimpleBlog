@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="data\accounts.sqlite">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="data\Create table.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

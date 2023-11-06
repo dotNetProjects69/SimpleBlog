@@ -56,12 +56,12 @@ namespace SimpleBlog.Controllers
         {
             PostModel post = new();
 
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"SELECT * FROM post Where Id = '{id}'";
+                    command.CommandText = $"SELECT * FROM [{data.TempData.AccountTableName}] Where Id = '{id}'";
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -107,55 +107,53 @@ namespace SimpleBlog.Controllers
         {
             List<PostModel> postList = new();
 
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
-                using (var command = connection.CreateCommand())
+                using var command = connection.CreateCommand();
+                connection.Open();
+                command.CommandText = $"SELECT * FROM [{data.TempData.AccountTableName}]";
+
+                using (var reader = command.ExecuteReader())
                 {
-                    connection.Open();
-                    command.CommandText = "SELECT * FROM post";
-
-                    using (var reader = command.ExecuteReader())
+                    if (reader.HasRows)
                     {
-                        if (reader.HasRows)
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                DateTimeFormatInfo dateTimeFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
-                                string dateFormat = dateTimeFormatInfo.ShortDatePattern;
-                                string timeFormat = dateTimeFormatInfo.LongTimePattern;
+                            DateTimeFormatInfo dateTimeFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
+                            string dateFormat = dateTimeFormatInfo.ShortDatePattern;
+                            string timeFormat = dateTimeFormatInfo.LongTimePattern;
 
-                                string format = $"{dateFormat} H{timeFormat}";
-                                DateTime.TryParseExact(reader.GetString(3),
-                                                       format, 
-                                                       CultureInfo.InvariantCulture,
-                                                       DateTimeStyles.None,
-                                                       out var parsedCreatedAt);
+                            string format = $"{dateFormat} H{timeFormat}";
+                            DateTime.TryParseExact(reader.GetString(3),
+                                                   format,
+                                                   CultureInfo.InvariantCulture,
+                                                   DateTimeStyles.None,
+                                                   out var parsedCreatedAt);
 
-                                DateTime.TryParseExact(reader.GetString(3),
-                                                       format,
-                                                       CultureInfo.InvariantCulture,
-                                                       DateTimeStyles.None,
-                                                       out var parsedUpdatedAt);
-                                postList.Add(
-                                    new PostModel
-                                    {
-                                        Id = reader.GetInt32(0),
-                                        Title = reader.GetString(1),
-                                        Body = reader.GetString(2),
-                                        CreatedAt = parsedCreatedAt,
-                                        UpdatedAt = parsedUpdatedAt
-                                    });
-                            }
+                            DateTime.TryParseExact(reader.GetString(3),
+                                                   format,
+                                                   CultureInfo.InvariantCulture,
+                                                   DateTimeStyles.None,
+                                                   out var parsedUpdatedAt);
+                            postList.Add(
+                                new PostModel
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Title = reader.GetString(1),
+                                    Body = reader.GetString(2),
+                                    CreatedAt = parsedCreatedAt,
+                                    UpdatedAt = parsedUpdatedAt
+                                });
                         }
-                        else
+                    }
+                    else
+                    {
+                        return new PostViewModel
                         {
-                            return new PostViewModel
-                            {
-                                PostList = postList
-                            };
-                        }
-                    };
-                }
+                            PostList = postList
+                        };
+                    }
+                };
             }
 
             return new PostViewModel
@@ -169,12 +167,14 @@ namespace SimpleBlog.Controllers
             post.CreatedAt = DateTime.Now;
             post.UpdatedAt = DateTime.Now;
 
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"INSERT INTO post (Title, Body, CreatedAt, UpdatedAt) VALUES ('{post.Title}', '{post.Body}', '{post.CreatedAt}', '{post.UpdatedAt}')";
+                    command.CommandText = $"INSERT INTO [{data.TempData.AccountTableName}] " +
+                        $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
+                        $"('{post.Title}', '{post.Body}', '{post.CreatedAt}', '{post.UpdatedAt}')";
                     try
                     {
                         command.ExecuteNonQuery();
@@ -193,12 +193,12 @@ namespace SimpleBlog.Controllers
         {
             post.UpdatedAt = DateTime.Now;
 
-            using (SqliteConnection connection = new (_configuration.GetConnectionString("BlogDataContext")))
+            using (SqliteConnection connection = new (_configuration.GetConnectionString("AccountsData")))
             {
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"UPDATE post SET Title = " +
+                    command.CommandText = $"UPDATE [{data.TempData.AccountTableName}] SET Title = " +
                                           $"'{post.Title}', " +
                                           $"Body = '{post.Body}', " +
                                           $"UpdatedAt = '{post.UpdatedAt}' " +
@@ -221,12 +221,12 @@ namespace SimpleBlog.Controllers
         public JsonResult Delete(int id)
         {
             using (SqliteConnection connection =
-                new (_configuration.GetConnectionString("BlogDataContext")))
+                new (_configuration.GetConnectionString("AccountsData")))
             {
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"DELETE from post WHERE Id = '{id}'";
+                    command.CommandText = $"DELETE from [{data.TempData.AccountTableName}] WHERE Id = '{id}'";
                     command.ExecuteNonQuery();
                 }
             }

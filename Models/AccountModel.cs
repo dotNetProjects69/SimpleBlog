@@ -1,6 +1,6 @@
-﻿namespace SimpleBlog.Models.Registration
+﻿namespace SimpleBlog.Models
 {
-    public class SignUpModel
+    public class AccountModel
     {
         private Guid id;
         private string name = string.Empty;
