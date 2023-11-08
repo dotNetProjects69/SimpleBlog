@@ -23,20 +23,29 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Posts</a>
-                        </li>
-                        @if(SimpleBlog.data.TempData.AccountTableName == string.Empty)
+                        @if(SimpleBlog.Models.TempData.AccountTableName != string.Empty)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Posts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" 
+                                   asp-area="" 
+                                   asp-controller="PersonalAccount" 
+                                   asp-action="Index">Account</a>
+                            </li>
+                        }
+                        @if(SimpleBlog.Models.TempData.AccountTableName == string.Empty)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area=""
                                    asp-controller="SignUp"
-                                   asp-action="ShowSignUpPage">Sign Up</a>
+                                   asp-action="Index">Sign Up</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area=""
                                    asp-controller="SignIn"
-                                   asp-action="ShowSignUpPage">Sign In</a>
+                                   asp-action="Index">Sign In</a>
                             </li>
                         }
                         

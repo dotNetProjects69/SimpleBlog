@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleBlog.Models;
 using SimpleBlog.Models.Registration;
 using System.Net;
 using SimpleBlog.Views.Registration;
 using Microsoft.Data.Sqlite;
+using SimpleBlog.Models;
 
 namespace SimpleBlog.Controllers
 {
@@ -20,7 +20,7 @@ namespace SimpleBlog.Controllers
             _signInPagePath = "/Views/Authentification/SignIn.cshtml";
         }
 
-        public IActionResult ShowSignUpPage()
+        public IActionResult Index()
         {
             SignInModel model = new();
             return View(_signInPagePath, model);
@@ -31,17 +31,17 @@ namespace SimpleBlog.Controllers
             signInModel ??= new();
             while (true)
             {
-                signInModel.StatusCode = CheckInputNickName(signInModel);
-                if (signInModel.StatusCode == HttpStatusCode.OK)
+                signInModel.Error = CheckInputNickName(signInModel);
+                if (signInModel.Error.StatusCode == HttpStatusCode.OK)
                 {
-                    data.TempData.AccountTableName = signInModel.NickName;
+                    Models.TempData.AccountTableName = signInModel.NickName;
                     return RedirectToAction("Index", "Posts");
                 }
                 return View(_signInPagePath, signInModel);
             }
         }
 
-        private HttpStatusCode CheckInputNickName(SignInModel signInModel)
+        private ErrorModel CheckInputNickName(SignInModel signInModel)
         {
             using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             string tableName = signInModel.NickName;
@@ -53,10 +53,13 @@ namespace SimpleBlog.Controllers
 
             if (result != null)
             {
-                if(CheckInputPassword(signInModel))
-                    return HttpStatusCode.OK;
+                if (!CheckInputPassword(signInModel))
+                    return new ErrorModel(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
+                else
+                    return new ErrorModel();
             }
-            return HttpStatusCode.BadRequest;
+            else
+                return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
         }
 
         private bool CheckInputPassword(SignInModel signInModel)

@@ -14,17 +14,26 @@
             <input type="text" asp-for="NickName" class="form-control" />
         </div>
     </div>
+
+    @if (Model.Error.StatusCode == HttpStatusCode.NotFound)
+    {
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+                <p style="color: red">@Model.Error.Message</p>
+            </div>
+        </div>
+    }
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
             <label asp-for="Password" class="form-label"></label>
             <input type="password" asp-for="Password" class="form-control" />
         </div>
     </div>
-    @if(Model.StatusCode == HttpStatusCode.BadRequest)
+    @if (Model.Error.StatusCode == HttpStatusCode.BadRequest)
     {
         <div class="row justify-content-center">
             <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-                <p style="color: red">Введены неверные логин или пароль</p>
+                <p style="color: red">@Model.Error.Message</p>
             </div>
         </div>
     }

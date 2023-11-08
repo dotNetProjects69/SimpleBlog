@@ -23,8 +23,8 @@ namespace SimpleBlog.Controllers
 
         public IActionResult Index()
         {
-            if (data.TempData.AccountTableName == string.Empty)
-                return RedirectToAction("ShowSignUpPage", "SignUp");
+            if (Models.TempData.AccountTableName == string.Empty)
+                return RedirectToAction("Index", "SignUp");
             PostViewModel postListViewModel = GetAllPosts();
             return View(postListViewModel);
         }
@@ -63,7 +63,7 @@ namespace SimpleBlog.Controllers
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"SELECT * FROM [{data.TempData.AccountTableName}] Where Id = '{id}'";
+                    command.CommandText = $"SELECT * FROM [{Models.TempData.AccountTableName}] Where Id = '{id}'";
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -113,9 +113,9 @@ namespace SimpleBlog.Controllers
             {
                 using var command = connection.CreateCommand();
                 connection.Open();
-                command.CommandText = $"SELECT * FROM [{data.TempData.AccountTableName}]";
+                command.CommandText = $"SELECT * FROM [{Models.TempData.AccountTableName}]";
 
-                using (var reader = command.ExecuteReader())
+                using (SqliteDataReader reader = command.ExecuteReader())
                 {
                     if (reader.HasRows)
                     {
@@ -171,20 +171,18 @@ namespace SimpleBlog.Controllers
 
             using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
-                using (var command = connection.CreateCommand())
+                using SqliteCommand command = connection.CreateCommand();
+                connection.Open();
+                command.CommandText = $"INSERT INTO [{Models.TempData.AccountTableName}] " +
+                    $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
+                    $"('{post.Title}', '{post.Body}', '{post.CreatedAt}', '{post.UpdatedAt}')";
+                try
                 {
-                    connection.Open();
-                    command.CommandText = $"INSERT INTO [{data.TempData.AccountTableName}] " +
-                        $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
-                        $"('{post.Title}', '{post.Body}', '{post.CreatedAt}', '{post.UpdatedAt}')";
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
 
@@ -200,7 +198,7 @@ namespace SimpleBlog.Controllers
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"UPDATE [{data.TempData.AccountTableName}] SET Title = " +
+                    command.CommandText = $"UPDATE [{Models.TempData.AccountTableName}] SET Title = " +
                                           $"'{post.Title}', " +
                                           $"Body = '{post.Body}', " +
                                           $"UpdatedAt = '{post.UpdatedAt}' " +
@@ -228,7 +226,7 @@ namespace SimpleBlog.Controllers
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"DELETE from [{data.TempData.AccountTableName}] WHERE Id = '{id}'";
+                    command.CommandText = $"DELETE from [{Models.TempData.AccountTableName}] WHERE Id = '{id}'";
                     command.ExecuteNonQuery();
                 }
             }
