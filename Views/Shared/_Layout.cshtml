@@ -26,12 +26,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Posts</a>
                         </li>
-                        @if(SimpleBlog.data.TempData.AccountId == Guid.Empty)
+                        @if(SimpleBlog.data.TempData.AccountTableName == string.Empty)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area=""
                                    asp-controller="SignUp"
-                                   asp-action="ShowSignUpPage">Sign In/Sign Up</a>
+                                   asp-action="ShowSignUpPage">Sign Up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area=""
+                                   asp-controller="SignIn"
+                                   asp-action="ShowSignUpPage">Sign In</a>
                             </li>
                         }
                         

@@ -23,6 +23,8 @@ namespace SimpleBlog.Controllers
 
         public IActionResult Index()
         {
+            if (data.TempData.AccountTableName == string.Empty)
+                return RedirectToAction("ShowSignUpPage", "SignUp");
             PostViewModel postListViewModel = GetAllPosts();
             return View(postListViewModel);
         }

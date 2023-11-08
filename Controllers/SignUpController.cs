@@ -9,20 +9,20 @@ namespace SimpleBlog.Controllers
 
         private readonly ILogger<SignUpController> _logger;
         private readonly IConfiguration _configuration;
-        private readonly string _signInPagePath;
+        private readonly string _signUpPagePath;
 
         public SignUpController(ILogger<SignUpController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
-            _signInPagePath = "/Views/Authentification/SignUp.cshtml";
+            _signUpPagePath = "/Views/Authentification/SignUp.cshtml";
 
         }
 
         public IActionResult ShowSignUpPage()
         {
             AccountModel model = new();
-            return View(_signInPagePath, model);
+            return View(_signUpPagePath, model);
         }
 
         public IActionResult RegisterNewAccount(AccountModel account)
@@ -42,14 +42,14 @@ namespace SimpleBlog.Controllers
 
         private static void AddAccountTable(AccountModel account, SqliteCommand command)
         {
-            command.CommandText = $"create table [{account.Id}] (" +
+            command.CommandText = $"create table [{account.NickName}] (" +
                                                   $"Id  integer primary key autoincrement, " +
                                                   $"Title text, Body text, " +
                                                   $"CreatedAt text, UpdatedAt text)";
             try
             {
-                command.ExecuteNonQuery();
-                data.TempData.AccountTableName = account.Id.ToString();
+                command.ExecuteNonQuery(); 
+                data.TempData.AccountTableName = account.NickName.ToString();
             }
             catch (Exception ex)
             {
@@ -59,10 +59,10 @@ namespace SimpleBlog.Controllers
 
         private static void AddNewAccount(AccountModel account, SqliteCommand command)
         {
-            command.CommandText = $"INSERT INTO AuthData (Name, Surname, DateOfBirth, Email, Password, UserID) " +
+            command.CommandText = $"INSERT INTO AuthData (Name, Surname, DateOfBirth, Email, Password, UserID, NickName) " +
                                   $"VALUES ('{account.Name}', '{account.Surname}', " +
                                           $"'{account.DateOfBirth}', '{account.Email}', " +
-                                          $"'{account.Password}', '{account.Id}')";
+                                          $"'{account.Password}', '{account.Id}', '{account.NickName}')";
             try
             {
                 command.ExecuteNonQuery();
