@@ -10,6 +10,21 @@
 <p>@Model.Email</p>
 <p>@Model.DateOfBirth</p>
 <p>@Model.NickName</p>
+
+<form asp-action="LogOut"
+      asp-controller="PersonalAccount"
+      id="form-action"
+      method="post"
+      class="form-horizontal"
+      role="form">
+
+    <div class="row justify-content-lg-start">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
+            <input style="background-color: darkblue" type="submit" id="form-button" class="btn btn-success" value="Log Out" />
+        </div>
+    </div>
+</form>
+
 <form asp-action="Delete"
       asp-controller="PersonalAccount"
       id="form-action"

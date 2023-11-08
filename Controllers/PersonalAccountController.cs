@@ -34,10 +34,16 @@ namespace SimpleBlog.Controllers
             return RedirectToAction("Index", "SignUp");
         }
 
+        public IActionResult LogOut()
+        {
+            Models.TempData.AccountTableName = string.Empty;
+            return RedirectToAction("Index", "SignUp");
+        }
+
         private void DeleteAccountTable()
         {
-            string sqlCommand = $"DROP TABLE '{Models.TempData.AccountTableName}'";
-            SqliteConnection connection = new(_configuration.GetConnectionString(""));
+            string sqlCommand = $"DROP TABLE [{Models.TempData.AccountTableName}]";
+            SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
             try
@@ -102,12 +108,6 @@ namespace SimpleBlog.Controllers
             model.DateOfBirth = dateOnly;
             model.Email = reader.GetString(4);
             model.NickName = reader.GetString(7);
-
-            Console.WriteLine($"Name - {model.Name}\n" +
-                              $"Surname - {model.Surname}\n" +
-                              $"Date of birth - {model.DateOfBirth}\n" +
-                              $"Email - {model.Email}\n" +
-                              $"Nicknmae - {model.NickName}");
         }
     }
 }

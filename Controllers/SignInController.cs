@@ -51,15 +51,16 @@ namespace SimpleBlog.Controllers
                                               $"WHERE type='table' AND name='{tableName}'", connection);
             object? result = command.ExecuteScalar();
 
+            Console.WriteLine(result != null);
             if (result != null)
             {
                 if (!CheckInputPassword(signInModel))
-                    return new ErrorModel(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
+                    return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
                 else
                     return new ErrorModel();
             }
             else
-                return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
+                return new ErrorModel(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
         }
 
         private bool CheckInputPassword(SignInModel signInModel)

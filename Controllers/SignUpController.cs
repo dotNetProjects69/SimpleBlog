@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using SimpleBlog.Models;
 using SimpleBlog.Models.Registration;
 using System.Net;
+using System.Net.Mail;
 
 namespace SimpleBlog.Controllers
 {
@@ -21,9 +22,9 @@ namespace SimpleBlog.Controllers
 
         }
 
-        public IActionResult Index()
+        public IActionResult Index(SignUpModel? model = null)
         {
-            SignUpModel model = new();
+            model ??= new();
 			return View(_signUpPagePath, model);
 		}
 
@@ -31,7 +32,14 @@ namespace SimpleBlog.Controllers
         {
             while (true)
             {
-				using (SqliteConnection connection = new (_configuration.GetConnectionString("AccountsData")))
+                if (string.IsNullOrWhiteSpace(model.Name) || !IsValidEmail(model.Email) ||
+                    string.IsNullOrWhiteSpace(model.NickName) || string.IsNullOrWhiteSpace(model.Password))
+                {
+                    model.Error = new(HttpStatusCode.BadRequest, "Some required fields are blank");
+                    return Index(model);
+                }
+
+                using (SqliteConnection connection = new (_configuration.GetConnectionString("AccountsData")))
 				{
 					connection.Open();
 
@@ -42,15 +50,17 @@ namespace SimpleBlog.Controllers
 					object? result = command.ExecuteScalar();
 
 					if (result != null)
-					{
+                    {
                         model.Error = new(HttpStatusCode.Conflict, "This nickname already used");
-					}
-				}
-                return RegisterNewAccount(model);
+                        return Index(model);
+                    }
+                }
+                
+                return Register(model);
             }
         }
 
-        public IActionResult RegisterNewAccount(SignUpModel model)
+        public IActionResult Register(SignUpModel model)
         {
             using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
@@ -94,6 +104,25 @@ namespace SimpleBlog.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            var trimmedEmail = email.Trim();
+
+            if (trimmedEmail.EndsWith("."))
+            {
+                return false; // suggested by @TK-421
+            }
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == trimmedEmail;
+            }
+            catch
+            {
+                return false;
             }
         }
 

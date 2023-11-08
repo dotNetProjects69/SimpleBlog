@@ -1,7 +1,9 @@
 ﻿@using SimpleBlog.Models.Registration;
+@using System.Net;
 @model SignUpModel
 
-<form asp-action="RegisterNewAccount"
+<form asp-action="CheckInputDataAndRegister"
+    asp-controller="SignUp"
     id="form-action"
     method="post"
     class="form-horizontal"
@@ -10,7 +12,9 @@
 
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-            <label asp-for="Name" class="form-label"></label>
+            <label asp-for="Name" class="form-label">
+                Name<span style="color: red;">*</span>
+            </label>
             <input asp-for="Name" class="form-control" />
         </div>
     </div>
@@ -22,31 +26,45 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-            <label asp-for="Email" class="form-label"></label>
+            <label asp-for="Email" class="form-label">
+                Email<span style="color: red;">*</span>
+            </label>
             <input type="email" asp-for="Email" class="form-control"/>
         </div>
     </div>
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-            <label asp-for="NickName" class="form-label"></label>
+            <label asp-for="NickName" class="form-label">
+                Nickname<span style="color: red;">*</span>
+            </label>
             <input type="text" asp-for="NickName" class="form-control"/>
         </div>
     </div>
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-            <label asp-for="Password" class="form-label"></label>
+            <label asp-for="Password" class="form-label">
+                Password<span style="color: red;">*</span>
+            </label>
             <input type="password" asp-for="Password" class="form-control"/>
         </div>
     </div>
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
             <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
-            <input type = "date" asp-for="DateOfBirth" class="form-control"/>
+            <input type="date" asp-for="DateOfBirth" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
         </div>
     </div>
+    @if (Model.Error.StatusCode != HttpStatusCode.OK)
+    {
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+                <p style="color: red">@Model.Error.Message</p>
+            </div>
+        </div>
+    }
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
-            <input type="submit" id="form-button" class="btn btn-success" value="Sign Up" />
+            <input type="submit" id="form-button" class="btn btn-success" value="Sign Up"/>
         </div>
     </div>
 
