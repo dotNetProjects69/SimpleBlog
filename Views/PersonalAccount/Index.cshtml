@@ -1,41 +1,40 @@
-﻿@model AccountModel
+﻿@using SimpleBlog.Models.Account;
+@using SimpleBlog.Views;
+@model AccountInfoModel
 
-<h2>@Model.Name</h2>
+<h2>Name: @Model.Name</h2>
 
 @if(Model.Surname != string.Empty)
 {
-	<p>@Model.Surname</p>
+	<p>Surname: @Model.Surname</p>
 }
 
-<p>@Model.Email</p>
-<p>@Model.DateOfBirth</p>
+<p>Email: @Model.Email</p>
+<p>Date of birth: @Model.DateOfBirth</p>
 <p>@Model.NickName</p>
+<p @(Html.IsDebug() ? "hidden" : "")>@Model.Id</p>
 
-<form asp-action="LogOut"
-      asp-controller="PersonalAccount"
-      id="form-action"
-      method="post"
-      class="form-horizontal"
-      role="form">
-
-    <div class="row justify-content-lg-start">
-        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
-            <input style="background-color: darkblue" type="submit" id="form-button" class="btn btn-success" value="Log Out" />
-        </div>
-    </div>
-</form>
-
-<form asp-action="Delete"
-      asp-controller="PersonalAccount"
-      id="form-action"
-      method="post"
-      class="form-horizontal"
-      role="form">
-
-    <div class="row justify-content-lg-start">
-        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
-            <input style="background-color: red" type="submit" id="form-button" class="btn btn-success" value="Delete Account" />
-        </div>
-    </div>
-
+<form asp-action=""
+    asp-controller="PersonalAccount"
+    method="post"
+    class="btn-group-vertical"
+    role="form">
+    <input type="submit"
+           name="submitButton"
+           value="Edit"
+           class="btn btn-success"
+           style="background-color: darkorange; margin-bottom: 10px"
+           asp-action="Update" />
+    <input type="submit"
+           name="submitButton"
+           value="Log Out"
+           class="btn btn-success"
+           style="background-color: darkblue; margin-bottom: 10px"
+           asp-action="LogOut" />
+    <input type="submit"
+           name="submitButton"
+           value="Delete Account"
+           class="btn btn-success"
+           style="background-color: red"
+           asp-action="Delete" />
 </form>

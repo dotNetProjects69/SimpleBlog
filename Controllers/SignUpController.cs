@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
-using SimpleBlog.Models.Registration;
+using SimpleBlog.Models.Account;
+using SimpleBlog.Models.Authentification;
 using System.Net;
-using System.Net.Mail;
 
 namespace SimpleBlog.Controllers
 {
@@ -28,52 +29,38 @@ namespace SimpleBlog.Controllers
 			return View(_signUpPagePath, model);
 		}
 
-        public IActionResult CheckInputDataAndRegister(SignUpModel model)
-        {
-            while (true)
-            {
-                if (string.IsNullOrWhiteSpace(model.Name) || !IsValidEmail(model.Email) ||
-                    string.IsNullOrWhiteSpace(model.NickName) || string.IsNullOrWhiteSpace(model.Password))
-                {
-                    model.Error = new(HttpStatusCode.BadRequest, "Some required fields are blank");
-                    return Index(model);
-                }
-
-                using (SqliteConnection connection = new (_configuration.GetConnectionString("AccountsData")))
-				{
-					connection.Open();
-
-					using SqliteCommand command = new($"SELECT name " +
-                                                      $"FROM sqlite_master " +
-                                                      $"WHERE type='table' " +
-                                                      $"AND name='{model.NickName}'", connection);
-					object? result = command.ExecuteScalar();
-
-					if (result != null)
-                    {
-                        model.Error = new(HttpStatusCode.Conflict, "This nickname already used");
-                        return Index(model);
-                    }
-                }
-                
-                return Register(model);
-            }
-        }
-
         public IActionResult Register(SignUpModel model)
         {
+            model ??= new ();
+            model.Error = CheckAndSetError(model);
+            model.Surname ??= string.Empty;
+            if (model.Error.StatusCode != HttpStatusCode.OK)
+                return Index(model);
             using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
                 using var command = connection.CreateCommand();
-                connection.Open();
-                model.Id = Guid.NewGuid();
-                AddAccountTable(model, command);
-                AddNewAccount(model, command);
+                {
+                    connection.Open();
+                    model.Id = Guid.NewGuid();
+                    AddNewAccount(model, command);
+                    AddAccountTable(model, command);
+                }
             }
             return RedirectToAction("Index", "Posts");
         }
 
-        private static void AddAccountTable(SignUpModel model, SqliteCommand command)
+        private ErrorModel CheckAndSetError(SignUpModel model)
+        {
+            if (model.CheckBlankFields().StatusCode != HttpStatusCode.OK) 
+                return model.CheckBlankFields();
+            else if (model.CheckNickName<AccountInfoModel>().StatusCode != HttpStatusCode.OK)
+                return model.CheckNickName<AccountInfoModel>();
+            else if (model.CheckEmailAlreadyExist<AccountInfoModel>().StatusCode != HttpStatusCode.OK)
+                return model.CheckEmailAlreadyExist<AccountInfoModel>();
+            return new ErrorModel();
+        }
+
+        private void AddAccountTable(SignUpModel model, SqliteCommand command)
         {
             command.CommandText = $"create table [{model.NickName}] (" +
                                                   $"Id  integer primary key autoincrement, " +
@@ -90,12 +77,12 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private static void AddNewAccount(SignUpModel model, SqliteCommand command)
+        private void AddNewAccount(SignUpModel model, SqliteCommand command)
         {
             command.CommandText = $"INSERT INTO AuthData (Name, Surname, DateOfBirth, Email, Password, UserID, NickName) " +
-                                  $"VALUES ('{model.Name}', '{model.Surname}', " +
-                                          $"'{model.DateOfBirth}', '{model.Email}', " +
-                                          $"'{model.Password}', '{model.Id}', '{model.NickName}')";
+                                  $"VALUES ('{model.Name.Trim()}', '{model.Surname.Trim()}', " +
+                                          $"'{model.DateOfBirth}', '{model.Email.Trim()}', " +
+                                          $"'{model.Password.Trim()}', '{model.Id}', '{model.NickName.Trim()}')";
             try
             {
                 command.ExecuteNonQuery();
@@ -104,25 +91,6 @@ namespace SimpleBlog.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }
-        }
-
-        private bool IsValidEmail(string email)
-        {
-            var trimmedEmail = email.Trim();
-
-            if (trimmedEmail.EndsWith("."))
-            {
-                return false; // suggested by @TK-421
-            }
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == trimmedEmail;
-            }
-            catch
-            {
-                return false;
             }
         }
 

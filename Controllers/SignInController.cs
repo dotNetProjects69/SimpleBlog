@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleBlog.Models.Registration;
+using SimpleBlog.Models.Authentification;
 using System.Net;
-using SimpleBlog.Views.Registration;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Models;
 
@@ -20,25 +19,22 @@ namespace SimpleBlog.Controllers
             _signInPagePath = "/Views/Authentification/SignIn.cshtml";
         }
 
-        public IActionResult Index()
+        public IActionResult Index(SignInModel? model = null)
         {
-            SignInModel model = new();
+            model ??= new();
             return View(_signInPagePath, model);
         }
 
-        public IActionResult LogIn(SignInModel signInModel)
+        public IActionResult LogIn(SignInModel model)
         {
-            signInModel ??= new();
-            while (true)
+            model ??= new();
+            model.Error = CheckInputNickName(model);
+            if (model.Error.StatusCode == HttpStatusCode.OK)
             {
-                signInModel.Error = CheckInputNickName(signInModel);
-                if (signInModel.Error.StatusCode == HttpStatusCode.OK)
-                {
-                    Models.TempData.AccountTableName = signInModel.NickName;
-                    return RedirectToAction("Index", "Posts");
-                }
-                return View(_signInPagePath, signInModel);
+                Models.TempData.AccountTableName = model.NickName;
+                return RedirectToAction("Index", "Posts");
             }
+            return Index(model);
         }
 
         private ErrorModel CheckInputNickName(SignInModel signInModel)
@@ -51,34 +47,24 @@ namespace SimpleBlog.Controllers
                                               $"WHERE type='table' AND name='{tableName}'", connection);
             object? result = command.ExecuteScalar();
 
-            Console.WriteLine(result != null);
-            if (result != null)
-            {
-                if (!CheckInputPassword(signInModel))
-                    return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
-                else
-                    return new ErrorModel();
-            }
-            else
+            if (result == null)
                 return new ErrorModel(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
+            return CheckInputPassword(signInModel);
         }
 
-        private bool CheckInputPassword(SignInModel signInModel)
+        private ErrorModel CheckInputPassword(SignInModel model)
         {
             using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
-            string password = signInModel.Password;
+            string password = model.Password;
             string tableName = "AuthData";
             connection.Open();
-            using SqliteCommand command = new($"Select Password from {tableName} where NickName = '{signInModel.NickName}'", connection);
-            Console.WriteLine(command.CommandText);
+            using SqliteCommand command = new($"Select Password from {tableName} where NickName = '{model.NickName}'", connection);
             object? result = command.ExecuteScalar();
-            if (result != null)
-            {
-                Console.WriteLine((string)result);
-                if ((string)result == signInModel.Password)
-                    return true;
-            }
-            return false;
+            if (result == null || (string)result != model.Password)
+                return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
+            return new ErrorModel();
         }
+
+        
     }
 }

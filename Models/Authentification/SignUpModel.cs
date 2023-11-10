@@ -1,6 +1,6 @@
-﻿namespace SimpleBlog.Models.Registration
+﻿namespace SimpleBlog.Models.Authentification
 {
-    public class SignUpModel
+    public class SignUpModel : IVerifiableData
     {
         private Guid id;
         private string name = string.Empty;
@@ -19,5 +19,10 @@
         public string Password { get => password; set => password = value; }
 		public string NickName { get => _nickName; set => _nickName = value; }
         public ErrorModel Error { get => _error; set => _error = value; }
+
+        public void Debug()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
-using SimpleBlog.Models;
-using System.Data;
+using SimpleBlog.Controllers.Extensions;
+using SimpleBlog.Models.Account;
 using System.Globalization;
-using System.Reflection;
 
 namespace SimpleBlog.Controllers
 {
@@ -22,10 +21,11 @@ namespace SimpleBlog.Controllers
         {
             if (Models.TempData.AccountTableName == string.Empty)
                 return RedirectToAction("Index", "SignUp");
-            AccountModel accountModel = InstantiateAccountModel();
+            AccountInfoModel accountModel = InstantiateAccountModel<AccountInfoModel>();
             return View(accountModel);
         }
 
+        [HttpPost]
         public IActionResult Delete()
         {
             DeleteAccountData();
@@ -34,26 +34,25 @@ namespace SimpleBlog.Controllers
             return RedirectToAction("Index", "SignUp");
         }
 
+        [HttpPost]
         public IActionResult LogOut()
         {
             Models.TempData.AccountTableName = string.Empty;
             return RedirectToAction("Index", "SignUp");
         }
 
+        [HttpPost]
+        public IActionResult Update(EditAccountModel model)
+        {
+            model = InstantiateAccountModel<EditAccountModel>();
+            return View("EditAccount", model);
+        }
+
         private void DeleteAccountTable()
         {
-            string sqlCommand = $"DROP TABLE [{Models.TempData.AccountTableName}]";
-            SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
-            SqliteCommand command = new(sqlCommand, connection);
-            connection.Open();
-            try
-            {
-                command.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            bool result = SqlExtensions.DropTable(Models.TempData.AccountTableName, out string error);
+            if (!result)
+                Console.WriteLine(error);
         }
 
         private void DeleteAccountData()
@@ -72,9 +71,9 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private AccountModel InstantiateAccountModel()
+        private T InstantiateAccountModel<T>() where T : class, IAccountModel, new()
         {
-            AccountModel model = new AccountModel();
+            T model = new();
             string sqlCommand = $"SELECT * FROM AuthData WHERE nickname = '{Models.TempData.AccountTableName}'";
             using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             using SqliteCommand command = new(sqlCommand, connection);
@@ -85,7 +84,12 @@ namespace SimpleBlog.Controllers
                 if (!reader.HasRows) return model;
                 reader.Read();
 
-                ReadData(model, reader);
+
+                // use Visitor pattern
+                if (model is EditAccountModel)
+                    model = SetData(model as EditAccountModel ?? new(), reader) as T ?? new T();
+                else 
+                    model = SetData(model, reader);
             }
             catch (Exception ex)
             {
@@ -94,11 +98,9 @@ namespace SimpleBlog.Controllers
             return model;
         }
 
-        private static void ReadData(AccountModel model, SqliteDataReader reader)
+        private static T SetData<T>(T model, SqliteDataReader reader) where T : IAccountModel
         {
-            DateTimeFormatInfo dateTimeFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
-            string dateFormat = dateTimeFormatInfo.ShortDatePattern;
-
+            model.Id = new(reader.GetString(6));
             model.Name = reader.GetString(1);
             model.Surname = reader.GetString(2);
             _ = DateOnly.TryParse(reader.GetString(4), 
@@ -108,6 +110,14 @@ namespace SimpleBlog.Controllers
             model.DateOfBirth = dateOnly;
             model.Email = reader.GetString(4);
             model.NickName = reader.GetString(7);
+            return model;
+        }
+
+        private static EditAccountModel SetData(EditAccountModel model, SqliteDataReader reader)
+        {
+            model = SetData<EditAccountModel>(model, reader);
+            model.Password = reader.GetString(5);
+            return model;
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-
-namespace SimpleBlog.Models.Registration
+﻿namespace SimpleBlog.Models.Authentification
 {
     public class SignInModel
     {
