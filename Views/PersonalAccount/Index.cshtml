@@ -12,7 +12,6 @@
 <p>Email: @Model.Email</p>
 <p>Date of birth: @Model.DateOfBirth</p>
 <p>@Model.NickName</p>
-<p @(Html.IsDebug() ? "hidden" : "")>@Model.Id</p>
 
 <form asp-action=""
     asp-controller="PersonalAccount"
