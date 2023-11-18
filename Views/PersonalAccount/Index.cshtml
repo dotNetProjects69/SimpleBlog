@@ -10,30 +10,30 @@
 }
 
 <p>Email: @Model.Email</p>
-<p>Date of birth: @Model.DateOfBirth.ToString()</p>
+<p>Date of birth: @Model.DateOfBirth.ToString("dd-MM-yyyy")</p>
 <p>@Model.NickName</p>
 
-<form asp-action=""
-    asp-controller="PersonalAccount"
-    method="post"
-    class="btn-group-vertical"
-    role="form">
-    <input type="submit"
-           name="submitButton"
-           value="Edit"
-           class="btn btn-success"
-           style="background-color: darkorange; margin-bottom: 10px"
-           asp-action="Update" />
-    <input type="submit"
-           name="submitButton"
-           value="Log Out"
-           class="btn btn-success"
-           style="background-color: darkblue; margin-bottom: 10px"
-           asp-action="LogOut" />
-    <input type="submit"
-           name="submitButton"
-           value="Delete Account"
-           class="btn btn-success"
-           style="background-color: red"
-           asp-action="Delete" />
-</form>
+<div class="btn-group-vertical">
+    <button type="button"
+            onclick="location.href='@Url.Action("Update", "PersonalAccount")'"
+            class="btn btn-success"
+            style="background-color: darkorange; margin-bottom: 10px">
+        Edit
+    </button>
+
+    <button type="button"
+            onclick="location.href='@Url.Action("LogOut", "PersonalAccount")'"
+            class="btn btn-success"
+            style="background-color: darkblue; margin-bottom: 10px">
+        Log Out
+    </button>
+
+    <button type="button"
+            onclick="location.href='@Url.Action("Delete", "PersonalAccount")'"
+            class="btn btn-success"
+            style="background-color: red; margin-bottom: 10px">
+        Delete
+    </button>
+</div>
+
+

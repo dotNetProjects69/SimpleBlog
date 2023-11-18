@@ -57,7 +57,7 @@
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
             <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
-            <input type="date" asp-for="DateOfBirth" class="form-control" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")"/>
+            <input type="date" asp-for="DateOfBirth" class="form-control" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" />
         </div>
     </div>
     @if (Model.Error.StatusCode != HttpStatusCode.OK)
