@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Hosting;
 using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
 using SimpleBlog.Models.Authentification;
 using System.Net;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 
 namespace SimpleBlog.Controllers
 {
@@ -41,9 +39,11 @@ namespace SimpleBlog.Controllers
             {
                 using var command = connection.CreateCommand();
                 {
+                    
                     connection.Open();
                     RewriteAccount(model);
-                    RemoveAccountTable(model);
+                    if (model.NickName != GetNickname())
+                        RenameAccountTable(model);
                     Models.TempData.AccountTableName = model.NickName;
                 }
             }
@@ -88,9 +88,9 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private void RemoveAccountTable(EditAccountModel model)
+        private void RenameAccountTable(EditAccountModel model)
         {
-            string sqlCommand = $"ALTER TABLE {Models.TempData.AccountTableName} RENAME TO {model.NickName.Trim()}"; 
+            string sqlCommand = $"ALTER TABLE {Models.TempData.AccountTableName} RENAME TO {model.NickName.Trim()}";
             using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
             {
                 using (var command = connection.CreateCommand())
@@ -121,8 +121,6 @@ namespace SimpleBlog.Controllers
             using SqliteCommand command = new($"Select * from {tableName} where Email = '{model.Email}'", connection);
             using(SqliteDataReader reader = command.ExecuteReader())
             {
-                oldDataModel.Debug();
-                model.Debug();
                 if (reader.Read() && oldDataModel.Id != model.Id)
                     errorModel = new ErrorModel(HttpStatusCode.BadRequest, "This email is already in use");
             }
@@ -147,6 +145,11 @@ namespace SimpleBlog.Controllers
             }
 
             return errorModel;
+        }
+
+        private string GetNickname()
+        {
+            return Models.TempData.AccountTableName;
         }
     }
 }

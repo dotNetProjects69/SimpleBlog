@@ -103,8 +103,8 @@ namespace SimpleBlog.Controllers
             model.Id = new(reader.GetString(6));
             model.Name = reader.GetString(1);
             model.Surname = reader.GetString(2);
-            _ = DateOnly.TryParse(reader.GetString(4), 
-                                  CultureInfo.CurrentCulture, 
+            _ = DateOnly.TryParse(reader.GetString(3), 
+                                  CultureInfo.InvariantCulture, 
                                   DateTimeStyles.None, 
                                   out DateOnly dateOnly);
             model.DateOfBirth = dateOnly;

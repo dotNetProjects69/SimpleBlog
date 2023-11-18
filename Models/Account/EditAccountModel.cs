@@ -1,4 +1,7 @@
 ﻿using SimpleBlog.Models.Authentification;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("SimpleBlogTest")]
 
 namespace SimpleBlog.Models.Account
 {

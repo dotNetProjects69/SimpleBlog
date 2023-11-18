@@ -3,6 +3,7 @@ using SimpleBlog.Models.Authentification;
 using System.Net;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Models;
+using SimpleBlog.Controllers.Extensions;
 
 namespace SimpleBlog.Controllers
 {
@@ -32,9 +33,15 @@ namespace SimpleBlog.Controllers
             if (model.Error.StatusCode == HttpStatusCode.OK)
             {
                 Models.TempData.AccountTableName = model.NickName;
+                Models.TempData.AccountId = new Guid(GetGuid());
                 return RedirectToAction("Index", "Posts");
             }
             return Index(model);
+        }
+
+        private string GetGuid()
+        {
+            return SqlExtensions.SelectFromTable("UserID", "Nickname", Models.TempData.NickName).ElementAt(0);
         }
 
         private ErrorModel CheckInputNickName(SignInModel signInModel)
@@ -54,13 +61,10 @@ namespace SimpleBlog.Controllers
 
         private ErrorModel CheckInputPassword(SignInModel model)
         {
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             string password = model.Password;
             string tableName = "AuthData";
-            connection.Open();
-            using SqliteCommand command = new($"Select Password from {tableName} where NickName = '{model.NickName}'", connection);
-            object? result = command.ExecuteScalar();
-            if (result == null || (string)result != model.Password)
+            IEnumerable<string> result = SqlExtensions.SelectFromTable("Password", "NickName", model.NickName, tableName);
+            if (result.Count() != 0 && result.ElementAt(0) != password)
                 return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
             return new ErrorModel();
         }
