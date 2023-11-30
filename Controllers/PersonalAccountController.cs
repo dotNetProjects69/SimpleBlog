@@ -20,7 +20,7 @@ namespace SimpleBlog.Controllers
         {
             if (Models.TempData.AccountTableName == string.Empty)
                 return RedirectToAction("Index", "SignUp");
-            AccountInfoModel accountModel = SqlExtensions
+            AccountInfoModel accountModel = AccountSql
                                             .InstantiateAccountModel<AccountInfoModel>("nickname",
                                                                                        Models.TempData.AccountTableName);
             return View(accountModel);
@@ -45,16 +45,14 @@ namespace SimpleBlog.Controllers
         
         public IActionResult Update(EditAccountModel model)
         {
-            model = SqlExtensions.InstantiateAccountModel<EditAccountModel>("NickName",
+            model = AccountSql.InstantiateAccountModel<EditAccountModel>("NickName",
                                                                             Models.TempData.AccountTableName);
             return View("EditAccount", model);
         }
 
         private void DeleteAccountTable()
         {
-            bool result = SqlExtensions.DropTable(Models.TempData.AccountTableName, out string error);
-            if (!result)
-                Console.WriteLine(error);
+            AccountSql.DropTable(Models.TempData.AccountTableName);
         }
 
         private void DeleteAccountData()

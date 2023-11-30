@@ -5,6 +5,7 @@ using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
 using SimpleBlog.Models.Authentification;
 using System.Net;
+using static System.Console;
 
 namespace SimpleBlog.Controllers
 {
@@ -41,7 +42,7 @@ namespace SimpleBlog.Controllers
                 using var command = connection.CreateCommand();
                 {
                     connection.Open();
-                    model.Id = Guid.NewGuid();
+                    SetNewGuid(model);
                     AddNewAccount(model, command);
                     AddAccountTable(model, command);
                 }
@@ -51,6 +52,10 @@ namespace SimpleBlog.Controllers
 
         private ErrorModel CheckAndSetError(SignUpModel model)
         {
+            /*ErrorModel errorBglankFields = model.CheckBlankFields();
+            ErrorModel errorNickname = model.CheckNickName<AccountInfoModel>();
+            ErrorModel errorEmailAlreadyExist = model.CheckEmailAlreadyExist<AccountInfoModel>();*/
+
             if (model.CheckBlankFields().StatusCode != HttpStatusCode.OK) 
                 return model.CheckBlankFields();
             else if (model.CheckNickName<AccountInfoModel>().StatusCode != HttpStatusCode.OK)
@@ -68,8 +73,8 @@ namespace SimpleBlog.Controllers
                                                   $"CreatedAt text, UpdatedAt text)";
             try
             {
-                command.ExecuteNonQuery(); 
-                Models.TempData.AccountTableName = model.NickName.ToString();
+                command.ExecuteNonQuery();
+                SetCurrentAccountTableNAme(model);
             }
             catch (Exception ex)
             {
@@ -86,13 +91,27 @@ namespace SimpleBlog.Controllers
             try
             {
                 command.ExecuteNonQuery();
-                Models.TempData.AccountId = model.Id;
+                SetCurrentAccointId(model);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                WriteLine(ex.Message);
             }
         }
 
+        private static void SetNewGuid(SignUpModel model)
+        {
+            model.Id = Guid.NewGuid();
+        }
+
+        private static void SetCurrentAccountTableNAme(SignUpModel model)
+        {
+            Models.TempData.AccountTableName = model.NickName;
+        }
+
+        private static void SetCurrentAccointId(SignUpModel model)
+        {
+            Models.TempData.AccountId = model.Id;
+        }
     }
 }

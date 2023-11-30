@@ -31,7 +31,7 @@
             {
                 <div class="post">
                     <h2><a asp-area="" asp-controller="Posts" asp-action="ViewPost" asp-route-id="@p.Id">@p.Title</a></h2>
-                    <h5 class="text-muted">@p.UpdatedAt</h5>
+                <h5 class="text-muted">@p.UpdatedAt.ToString("dd.MM.yyyy HH:mm:ss")</h5>
                     <p>@p.Body</p>
                 </div>
             }

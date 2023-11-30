@@ -1,25 +1,25 @@
 ﻿using Microsoft.Data.Sqlite;
 using SimpleBlog.Models.Account;
 using System.Globalization;
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using static System.Console;
 
 [assembly: InternalsVisibleTo("SimpleBlogTest")]
 
 namespace SimpleBlog.Controllers.Extensions
 {
-    public static class SqlExtensions
+    public class AccountSql
     {
         private static readonly IConfiguration _configuration = new ConfigurationBuilder()
                                                                     .AddJsonFile("appsettings.json")
                                                                     .Build();
 
-        internal static bool DropTable(string tableName, out string errorMessage)
+        private static readonly string _accountsData = _configuration.GetConnectionString("AccountsData") ?? "";
+
+        internal static void DropTable(string tableName)
         {
-            errorMessage = string.Empty;
             string sqlCommand = $"DROP TABLE [{tableName}]";
-            SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
+            SqliteConnection connection = new(_accountsData);
             SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
             try
@@ -28,10 +28,8 @@ namespace SimpleBlog.Controllers.Extensions
             }
             catch (Exception ex)
             {
-                errorMessage = ex.Message;
-                return false;
+                WriteLine(ex.Message);
             }
-            return true;
         }
 
         #region by data list
@@ -49,14 +47,12 @@ namespace SimpleBlog.Controllers.Extensions
             return model;
         }
 
-        internal static IEnumerable<string> SelectFromTable(string selectable,
-                                                            string filterParam,
-                                                            string filterName,
-                                                            string tableName = "AuthData")
+        internal static IEnumerable<string> SelectFromTable(string selectable, string filterParam,
+                                                            string filterName, string tableName = "AuthData")
         {
             List<string> data = new ();
             string sqlCommand = $"SELECT {selectable} FROM {tableName} WHERE {filterParam} = '{filterName}'";
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
+            using SqliteConnection connection = new(_accountsData);
             using SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
             try
@@ -75,7 +71,7 @@ namespace SimpleBlog.Controllers.Extensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                WriteLine(ex.Message);
             }
             
             return data;

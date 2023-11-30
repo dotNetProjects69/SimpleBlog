@@ -11,13 +11,15 @@ namespace SimpleBlog.Controllers
     {
         private readonly ILogger<SignInController> _logger;
         private readonly IConfiguration _configuration;
-        string _signInPagePath;
+        private readonly string _signInPagePath;
+        private readonly string _accountsData;
 
         public SignInController(ILogger<SignInController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
             _signInPagePath = "/Views/Authentification/SignIn.cshtml";
+            _accountsData = _configuration.GetConnectionString("AccountsData") ?? "";
         }
 
         public IActionResult Index(SignInModel? model = null)
@@ -41,12 +43,12 @@ namespace SimpleBlog.Controllers
 
         private string GetGuid()
         {
-            return SqlExtensions.SelectFromTable("UserID", "Nickname", Models.TempData.NickName).ElementAt(0);
+            return AccountSql.SelectFromTable("UserID", "Nickname", Models.TempData.NickName).ElementAt(0);
         }
 
         private ErrorModel CheckInputNickName(SignInModel signInModel)
         {
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
+            using SqliteConnection connection = new(_accountsData);
             string tableName = signInModel.NickName;
             connection.Open();
             using SqliteCommand command = new($"SELECT name " +
@@ -63,7 +65,7 @@ namespace SimpleBlog.Controllers
         {
             string password = model.Password;
             string tableName = "AuthData";
-            IEnumerable<string> result = SqlExtensions.SelectFromTable("Password", "NickName", model.NickName, tableName);
+            IEnumerable<string> result = AccountSql.SelectFromTable("Password", "NickName", model.NickName, tableName);
             if (result.Count() != 0 && result.ElementAt(0) != password)
                 return new ErrorModel(HttpStatusCode.BadRequest, "Password not valid");
             return new ErrorModel();

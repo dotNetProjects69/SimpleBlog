@@ -114,7 +114,7 @@ namespace SimpleBlog.Controllers
             using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             connection.Open();
             EditAccountModel oldDataModel =
-                SqlExtensions.InstantiateAccountModel<EditAccountModel>("UserID", model.Id.ToString());
+                AccountSql.InstantiateAccountModel<EditAccountModel>("UserID", model.Id.ToString());
             ErrorModel errorModel = new();
             string email = model.Email;
             string tableName = "AuthData";
@@ -133,7 +133,7 @@ namespace SimpleBlog.Controllers
             ErrorModel errorModel = new();
             connection.Open();
             EditAccountModel oldDataModel =
-                SqlExtensions.InstantiateAccountModel<EditAccountModel>("UserID", model.Id.ToString());
+                AccountSql.InstantiateAccountModel<EditAccountModel>("UserID", model.Id.ToString());
             using SqliteCommand command = new($"SELECT name " +
                                               $"FROM sqlite_master " +
                                               $"WHERE type='table' " +

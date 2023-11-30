@@ -3,6 +3,9 @@ using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
 using SimpleBlog.Models.Authentification;
 using System.Net;
+using System.Net.Mail;
+using System.Reflection.PortableExecutable;
+using static System.Console;
 
 namespace SimpleBlog.Controllers.Extensions
 {
@@ -24,41 +27,25 @@ namespace SimpleBlog.Controllers.Extensions
             return errorModel;
         }
 
-        internal static ErrorModel CheckNickName<T>(this IVerifiableData model) where T : class, IAccountModel, new()
+        internal static ErrorModel CheckNickName<T>(this IVerifiableData newDataModel) where T : class, IAccountModel, new()
         {
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             ErrorModel errorModel = new();
-            connection.Open();
             T oldDataModel =
-                SqlExtensions.InstantiateAccountModel<T>("UserID", model.Id.ToString());
-            using SqliteCommand command = new($"SELECT name " +
-                                              $"FROM sqlite_master " +
-                                              $"WHERE type='table' " +
-                                              $"AND name='{model.NickName}'", connection);
-            using (SqliteDataReader reader = command.ExecuteReader())
-            {
-                if (reader.Read() && oldDataModel.Id != model.Id)
-                    errorModel = new ErrorModel(HttpStatusCode.Conflict, "This nickname already used");
-            }
+                AccountSql.InstantiateAccountModel<T>("NickName", newDataModel.NickName);
+            if (!oldDataModel.Id.Equals(new Guid()))
+                errorModel = new ErrorModel(HttpStatusCode.Conflict, "This nickname already used");
 
             return errorModel;
         }
 
-        internal static ErrorModel CheckEmailAlreadyExist<T>(this IVerifiableData newDataModel) where T : class, IAccountModel, new()
+        internal static ErrorModel CheckEmailAlreadyExist<T>(this IVerifiableData newDataModel) 
+            where T : class, IAccountModel, new()
         {
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
-            connection.Open();
             T oldDataModel =
-                SqlExtensions.InstantiateAccountModel<T>("UserID", newDataModel.Id.ToString());
+                AccountSql.InstantiateAccountModel<T>("Email", newDataModel.Email);
             ErrorModel errorModel = new();
-            string email = newDataModel.Email;
-            string tableName = "AuthData";
-            using SqliteCommand command = new($"Select * from {tableName} where Email = '{newDataModel.Email}'", connection);
-            using (SqliteDataReader reader = command.ExecuteReader())
-            {
-                if (reader.Read() && oldDataModel.Id != newDataModel.Id)
-                    errorModel = new ErrorModel(HttpStatusCode.BadRequest, "This email is already in use");
-            }
+            if (oldDataModel.Email != string.Empty)
+                errorModel = new ErrorModel(HttpStatusCode.BadRequest, "This email is already in use");
             return errorModel;
         }
 
@@ -71,8 +58,8 @@ namespace SimpleBlog.Controllers.Extensions
 
             try
             {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == trimmedEmail;
+                MailAddress emailAddress = new MailAddress(email);
+                return emailAddress.Address == trimmedEmail;
             }
             catch
             {
