@@ -1,6 +1,6 @@
 ﻿namespace SimpleBlog.Models.Account
 {
-    public class AccountInfoModel : IAccountModel
+    public class AccountInfoModel : IAccount
     {
         private Guid _id;
         private string name = string.Empty;

@@ -31,9 +31,8 @@ namespace SimpleBlog.Controllers.Extensions
                 WriteLine(ex.Message);
             }
         }
-
-        #region by data list
-        public static T InstantiateAccountModel<T>(string parameter, string value) where T : class, IAccountModel, new()
+        
+        public static T InstantiateAccountModel<T>(string parameter, string value) where T : class, IAccount, new()
         {
             T model = new();
             IEnumerable<string> data = SelectFromTable("*", parameter, value);
@@ -77,7 +76,7 @@ namespace SimpleBlog.Controllers.Extensions
             return data;
         }
 
-        private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccountModel
+        private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccount
         {
             model.Id = new(data.ElementAt(6));
             model.Name = data.ElementAt(1);
@@ -98,6 +97,5 @@ namespace SimpleBlog.Controllers.Extensions
             model.Password = data.ElementAt(5);
             return model;
         }
-        #endregion
     }
 }

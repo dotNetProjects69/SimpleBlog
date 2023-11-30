@@ -52,12 +52,12 @@ namespace SimpleBlog.Controllers
 
         private ErrorModel CheckAndSetError(EditAccountModel model)
         {
-            if (model.CheckBlankFields().StatusCode != HttpStatusCode.OK)
-                return model.CheckBlankFields();
+            if (model.DetectBlankFields().StatusCode != HttpStatusCode.OK)
+                return model.DetectBlankFields();
             else if (CheckNickName(model).StatusCode != HttpStatusCode.OK)
-                return model.CheckNickName<EditAccountModel>();
+                return model.CheckNickNameAlreadyUsed();
             else if (CheckEmailAlreadyExist(model).StatusCode != HttpStatusCode.OK)
-                return model.CheckEmailAlreadyExist<EditAccountModel>();
+                return model.CheckEmailAlreadyExist();
             return new ErrorModel();
         }
 
@@ -109,7 +109,7 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private ErrorModel CheckEmailAlreadyExist(IVerifiableData model)
+        private ErrorModel CheckEmailAlreadyExist(IVerifiableFull model)
         {
             using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             connection.Open();
@@ -127,7 +127,7 @@ namespace SimpleBlog.Controllers
             return errorModel;
         }
 
-        private ErrorModel CheckNickName(IVerifiableData model)
+        private ErrorModel CheckNickName(IVerifiableFull model)
         {
             using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
             ErrorModel errorModel = new();

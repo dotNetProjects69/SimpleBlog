@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
+using SimpleBlog.Controllers.Extensions;
+using SimpleBlog.Models;
 using SimpleBlog.Models.Authentification;
 using System.Net;
-using Microsoft.Data.Sqlite;
-using SimpleBlog.Models;
-using SimpleBlog.Controllers.Extensions;
 
 namespace SimpleBlog.Controllers
 {
@@ -28,37 +28,57 @@ namespace SimpleBlog.Controllers
             return View(_signInPagePath, model);
         }
 
-        public IActionResult LogIn(SignInModel model)
+        public IActionResult LogInByNickname(SignInModel model)
         {
             model ??= new();
-            model.Error = CheckInputNickName(model);
+            model.Error = CheckNickName(model);
+            if (model.Error.StatusCode == HttpStatusCode.OK)
+                model.Error = CheckInputPassword(model);
             if (model.Error.StatusCode == HttpStatusCode.OK)
             {
                 Models.TempData.AccountTableName = model.NickName;
-                Models.TempData.AccountId = new Guid(GetGuid());
+                Models.TempData.AccountId = new Guid(GetGuidByNickname(model));
                 return RedirectToAction("Index", "Posts");
             }
             return Index(model);
         }
 
-        private string GetGuid()
+        public IActionResult LogInByEmail(SignInModel model)
         {
-            return AccountSql.SelectFromTable("UserID", "Nickname", Models.TempData.NickName).ElementAt(0);
+            model ??= new();
+            model.Error = CheckInputEmail(model);
+            if (model.Error.StatusCode == HttpStatusCode.OK)
+            {
+                Models.TempData.AccountTableName = model.NickName;
+                Models.TempData.AccountId = new Guid(GetGuidByEmail(model));
+                return RedirectToAction("Index", "Posts");
+            }
+            return Index(model);
         }
 
-        private ErrorModel CheckInputNickName(SignInModel signInModel)
+        private ErrorModel CheckInputEmail(SignInModel model)
         {
-            using SqliteConnection connection = new(_accountsData);
-            string tableName = signInModel.NickName;
-            connection.Open();
-            using SqliteCommand command = new($"SELECT name " +
-                                              $"FROM sqlite_master " +
-                                              $"WHERE type='table' AND name='{tableName}'", connection);
-            object? result = command.ExecuteScalar();
+            throw new NotImplementedException();
+        }
 
-            if (result == null)
-                return new ErrorModel(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
-            return CheckInputPassword(signInModel);
+        private string GetGuidByNickname(SignInModel model)
+        {
+            return GetGuid("Nickname", model.NickName);
+        }
+
+        private string GetGuidByEmail(SignInModel model)
+        {
+            return GetGuid("Email", model.Email);
+        }
+
+        private string GetGuid(string filterParam, string fiterValue)
+        {
+            return AccountSql.SelectFromTable("UserID", filterParam, fiterValue).ElementAt(0);
+        }
+
+        private ErrorModel CheckNickName(SignInModel signInModel)
+        {
+            return signInModel.CheckNickNameDoesNotExist();
         }
 
         private ErrorModel CheckInputPassword(SignInModel model)

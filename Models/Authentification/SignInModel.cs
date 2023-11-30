@@ -1,6 +1,8 @@
-﻿namespace SimpleBlog.Models.Authentification
+﻿using System.Xml.Linq;
+
+namespace SimpleBlog.Models.Authentification
 {
-    public class SignInModel
+    public class SignInModel : IVerifiableCore
     {
         private Guid _id;
         private string _nickName;
@@ -21,5 +23,13 @@
         public string Password { get => _password; set => _password = value; }
 		public ErrorModel Error { get => _error; set => _error = value; }
         public Guid Id { get => _id; set => _id = value; }
+
+        public void Debug()
+        {
+            Console.WriteLine($"Id - {_id}\n" +
+                              $"Email - {_email}\n" +
+                              $"Password - {_password}\n" +
+                              $"Nickname - {_nickName}\n");
+        }
     }
 }

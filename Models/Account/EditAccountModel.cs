@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace SimpleBlog.Models.Account
 {
-    public class EditAccountModel : IAccountModel, IVerifiableData
+    public class EditAccountModel : IAccount, IVerifiableFull
     {
         private Guid _id;
         private string _name = string.Empty;

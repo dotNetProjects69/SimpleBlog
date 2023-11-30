@@ -1,6 +1,6 @@
 ﻿namespace SimpleBlog.Models.Authentification
 {
-    public class SignUpModel : IVerifiableData
+    public class SignUpModel : IVerifiableFull
     {
         private Guid _id;
         private string _name = string.Empty;

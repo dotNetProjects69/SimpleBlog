@@ -56,12 +56,12 @@ namespace SimpleBlog.Controllers
             ErrorModel errorNickname = model.CheckNickName<AccountInfoModel>();
             ErrorModel errorEmailAlreadyExist = model.CheckEmailAlreadyExist<AccountInfoModel>();*/
 
-            if (model.CheckBlankFields().StatusCode != HttpStatusCode.OK) 
-                return model.CheckBlankFields();
-            else if (model.CheckNickName<AccountInfoModel>().StatusCode != HttpStatusCode.OK)
-                return model.CheckNickName<AccountInfoModel>();
-            else if (model.CheckEmailAlreadyExist<AccountInfoModel>().StatusCode != HttpStatusCode.OK)
-                return model.CheckEmailAlreadyExist<AccountInfoModel>();
+            if (model.DetectBlankFields().StatusCode != HttpStatusCode.OK) 
+                return model.DetectBlankFields();
+            else if (model.CheckNickNameAlreadyUsed().StatusCode != HttpStatusCode.OK)
+                return model.CheckNickNameAlreadyUsed();
+            else if (model.CheckEmailAlreadyExist().StatusCode != HttpStatusCode.OK)
+                return model.CheckEmailAlreadyExist();
             return new ErrorModel();
         }
 
