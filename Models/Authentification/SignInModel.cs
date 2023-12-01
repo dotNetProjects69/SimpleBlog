@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace SimpleBlog.Models.Authentification
+﻿namespace SimpleBlog.Models.Authentification
 {
     public class SignInModel : IVerifiableCore
     {
