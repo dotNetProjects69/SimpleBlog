@@ -61,7 +61,7 @@ namespace SimpleBlog.Controllers.Extensions
             ErrorModel errorModel = new();
 
             if (!AccountExist("Email", newDataModel.Email))
-                errorModel = new ErrorModel(HttpStatusCode.Conflict, "An account with such an email does not exist");
+                errorModel = new ErrorModel(HttpStatusCode.NotFound, "An account with such an email does not exist");
 
             return errorModel;
         }
