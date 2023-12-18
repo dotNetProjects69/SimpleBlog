@@ -1,4 +1,4 @@
-﻿@using SimpleBlog.Models.Authentification;
+﻿@using SimpleBlog.Models.Authentication;
 @using System.Net;
 @model SignInModel
 
@@ -9,7 +9,6 @@
 
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-            
             <label asp-for="Email" class="form-label"></label>
             <input type="text" asp-for="Email" class="form-control"/>
         </div>
@@ -42,7 +41,7 @@
             <input asp-controller="SignInByEmail"
                    asp-action="LogIn"
                    type="submit"
-                   id="form-button"
+                   id="LogInButton"
                    class="btn btn-success"
                    value="Sign In" />
 
@@ -52,7 +51,7 @@
                    asp-action="LogInByNickname"
                    type="submit"
                    style="background-color: white; color: forestgreen"
-                   id="form-button"
+                   id="LogInByNicknameButton"
                    class="btn btn-success"
                    value="Sign In By Nickname" />
         </div>

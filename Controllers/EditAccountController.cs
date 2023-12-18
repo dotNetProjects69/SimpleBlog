@@ -3,9 +3,8 @@ using Microsoft.Data.Sqlite;
 using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
-using SimpleBlog.Models.Authentification;
 using System.Net;
-using System.Reflection;
+using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers
 {
@@ -35,7 +34,7 @@ namespace SimpleBlog.Controllers
             model.Surname ??= string.Empty;
             if (model.Error.StatusCode != HttpStatusCode.OK)
                 return Index(model);
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
+            using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using var command = connection.CreateCommand();
                 {
@@ -47,6 +46,7 @@ namespace SimpleBlog.Controllers
                     Models.TempData.AccountTableName = model.NickName;
                 }
             }
+            new NotFoundResult();
             return RedirectToAction("Index", "PersonalAccount");
         }
 
@@ -54,16 +54,16 @@ namespace SimpleBlog.Controllers
         {
             if (model.DetectBlankFields().StatusCode != HttpStatusCode.OK)
                 return model.DetectBlankFields();
-            else if (CheckNickName(model).StatusCode != HttpStatusCode.OK)
+            else if (model.CheckNickNameAlreadyUsed().StatusCode != HttpStatusCode.OK)
                 return model.CheckNickNameAlreadyUsed();
-            else if (CheckEmailAlreadyExist(model).StatusCode != HttpStatusCode.OK)
+            else if (model.CheckEmailAlreadyExist().StatusCode != HttpStatusCode.OK)
                 return model.CheckEmailAlreadyExist();
             return new ErrorModel();
         }
 
         private void RewriteAccount(EditAccountModel model)
         {
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
+            using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -91,7 +91,7 @@ namespace SimpleBlog.Controllers
         private void RenameAccountTable(EditAccountModel model)
         {
             string sqlCommand = $"ALTER TABLE {Models.TempData.AccountTableName} RENAME TO {model.NickName.Trim()}";
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
+            using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -107,44 +107,6 @@ namespace SimpleBlog.Controllers
                     }
                 }
             }
-        }
-
-        private ErrorModel CheckEmailAlreadyExist(IVerifiableFull model)
-        {
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
-            connection.Open();
-            EditAccountModel oldDataModel =
-                AccountSql.InstantiateAccountModel<EditAccountModel>("UserID", model.Id.ToString());
-            ErrorModel errorModel = new();
-            string email = model.Email;
-            string tableName = "AuthData";
-            using SqliteCommand command = new($"Select * from {tableName} where Email = '{model.Email}'", connection);
-            using(SqliteDataReader reader = command.ExecuteReader())
-            {
-                if (reader.Read() && oldDataModel.Id != model.Id)
-                    errorModel = new ErrorModel(HttpStatusCode.BadRequest, "This email is already in use");
-            }
-            return errorModel;
-        }
-
-        private ErrorModel CheckNickName(IVerifiableFull model)
-        {
-            using SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
-            ErrorModel errorModel = new();
-            connection.Open();
-            EditAccountModel oldDataModel =
-                AccountSql.InstantiateAccountModel<EditAccountModel>("UserID", model.Id.ToString());
-            using SqliteCommand command = new($"SELECT name " +
-                                              $"FROM sqlite_master " +
-                                              $"WHERE type='table' " +
-                                              $"AND name='{model.NickName}'", connection);
-            using (SqliteDataReader reader = command.ExecuteReader())
-            {
-                if (reader.Read() && oldDataModel.Id != model.Id)
-                    errorModel = new ErrorModel(HttpStatusCode.Conflict, "This nickname already used");
-            }
-
-            return errorModel;
         }
 
         private string GetNickname()

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
-using SimpleBlog.Models;
+using SimpleBlog.Models.Post;
 using System.Globalization;
+using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers.Extensions
 {
@@ -20,7 +21,7 @@ namespace SimpleBlog.Controllers.Extensions
         {
             List<PostModel> postList = new();
 
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
+            using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using var command = connection.CreateCommand();
                 connection.Open();

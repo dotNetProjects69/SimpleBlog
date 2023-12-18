@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models.Authentification;
+using SimpleBlog.Models.Authentication;
+using static SimpleBlog.Controllers.Extensions.AccountSql;
 
 namespace SimpleBlog.Controllers.SignInControllers
 {
@@ -19,20 +20,18 @@ namespace SimpleBlog.Controllers.SignInControllers
         {
             model ??= new();
             ValidateEmail(model);
-            if (StatusCodeIsOK(model))
+            if (StatusCodeIsOk(model))
                 ValidateInputPassword(model);
-            if (StatusCodeIsOK(model))
-            {
-                SetAccountTableName(model);
-                SetCurrentGuid(model);
-                return RedirectToAction("Index", "Posts");
-            }
-            return Index(model);
+            if (!StatusCodeIsOk(model))
+                return Index(model);
+            SetAccountTableName(model);
+            SetCurrentGuid(model);
+            return RedirectToAction("Index", "Posts");
         }
 
         private static void SetNickname(SignInModel model)
         {
-            model.NickName = AccountSql.SelectFromTable("NickName", "Email", model.Email).First();
+            model.NickName = SelectFromTableByWhere("NickName", "Email", model.Email)[0];
         }
 
         public IActionResult LogInByNickname()
@@ -42,7 +41,7 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         private void SetCurrentGuid(SignInModel model)
         {
-            Models.TempData.AccountId = new Guid(GetGuidByEmail(model));
+            Models.TempData.AccountId = new(GetGuidByEmail(model));
         }
 
         private void ValidateEmail(SignInModel model)
@@ -57,8 +56,13 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         private protected override void SetAccountTableName(SignInModel model)
         {
-            SetNickname(model);
             base.SetAccountTableName(model);
+        }
+
+        private protected override void ValidateInputPassword(SignInModel model)
+        {
+            SetNickname(model);
+            base.ValidateInputPassword(model);
         }
     }
 }

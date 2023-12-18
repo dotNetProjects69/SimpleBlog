@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
-using SimpleBlog.Models.Authentification;
+using SimpleBlog.Models.Authentication;
 using System.Net;
+using static SimpleBlog.Controllers.Extensions.AccountSql;
 
 namespace SimpleBlog.Controllers
 {
@@ -17,18 +17,18 @@ namespace SimpleBlog.Controllers
         {
             _logger = logger;
             _configuration = configuration; 
-            _signInByNicknamePagePath = "/Views/Authentification/SignInByNickname.cshtml";
-            _signInByEmailPagePath = "/Views/Authentification/SignInByEmail.cshtml";
+            _signInByNicknamePagePath = "/Views/Authentication/SignInByNickname.cshtml";
+            _signInByEmailPagePath = "/Views/Authentication/SignInByEmail.cshtml";
         }
 
         public abstract IActionResult Index(SignInModel? model = null);
 
         private protected string GetGuid(string filterParam, string fiterValue)
         {
-            return AccountSql.SelectFromTable("UserID", filterParam, fiterValue).ElementAt(0);
+            return SelectFromTableByWhere("UserID", filterParam, fiterValue).First();
         }
 
-        private protected bool StatusCodeIsOK(SignInModel model)
+        private protected bool StatusCodeIsOk(SignInModel model)
         {
             return model.Error.StatusCode == HttpStatusCode.OK;
         }
@@ -38,13 +38,13 @@ namespace SimpleBlog.Controllers
             Models.TempData.AccountTableName = model.NickName;
         }
 
-        private protected void ValidateInputPassword(SignInModel model)
+        private protected virtual void ValidateInputPassword(SignInModel model)
         {
             ErrorModel errorModel = new ();
             string password = model.Password;
-            string tableName = "AuthData";
-            IEnumerable<string> result = AccountSql.SelectFromTable("Password", "NickName", model.NickName, tableName);
-            if (result.Any() && result.ElementAt(0) != password)
+            IReadOnlyList<string> result = 
+                SelectFromTableByWhere("Password", "NickName", model.NickName);
+            if (!result.Any() || result.ElementAt(0) != password)
             {
                 errorModel.StatusCode = HttpStatusCode.BadRequest;
                 errorModel.Message = "Password not valid";

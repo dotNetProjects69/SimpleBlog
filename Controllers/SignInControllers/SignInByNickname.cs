@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models.Authentification;
+using SimpleBlog.Models.Authentication;
 
 namespace SimpleBlog.Controllers.SignInControllers
 {
@@ -19,9 +19,9 @@ namespace SimpleBlog.Controllers.SignInControllers
         {
             model ??= new();
             ValidateNickName(model);
-            if (StatusCodeIsOK(model))
+            if (StatusCodeIsOk(model))
                 ValidateInputPassword(model);
-            if (StatusCodeIsOK(model))
+            if (StatusCodeIsOk(model))
             {
                 SetAccountTableName(model);
                 SetCurrentGuid(model);

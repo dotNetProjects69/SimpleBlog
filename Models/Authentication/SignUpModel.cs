@@ -1,4 +1,4 @@
-﻿namespace SimpleBlog.Models.Authentification
+﻿namespace SimpleBlog.Models.Authentication
 {
     public class SignUpModel : IVerifiableFull
     {

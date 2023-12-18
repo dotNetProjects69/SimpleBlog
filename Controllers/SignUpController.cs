@@ -2,10 +2,10 @@
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
-using SimpleBlog.Models.Account;
-using SimpleBlog.Models.Authentification;
+using SimpleBlog.Models.Authentication;
 using System.Net;
 using static System.Console;
+using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers
 {
@@ -20,7 +20,7 @@ namespace SimpleBlog.Controllers
         {
             _logger = logger;
             _configuration = configuration;
-            _signUpPagePath = "/Views/Authentification/SignUp.cshtml";
+            _signUpPagePath = "/Views/Authentication/SignUp.cshtml";
 
         }
 
@@ -37,7 +37,7 @@ namespace SimpleBlog.Controllers
             model.Surname ??= string.Empty;
             if (model.Error.StatusCode != HttpStatusCode.OK)
                 return Index(model);
-            using (SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData")))
+            using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using var command = connection.CreateCommand();
                 {
@@ -52,10 +52,6 @@ namespace SimpleBlog.Controllers
 
         private ErrorModel CheckAndSetError(SignUpModel model)
         {
-            /*ErrorModel errorBglankFields = model.CheckBlankFields();
-            ErrorModel errorNickname = model.CheckNickName<AccountInfoModel>();
-            ErrorModel errorEmailAlreadyExist = model.CheckEmailAlreadyExist<AccountInfoModel>();*/
-
             if (model.DetectBlankFields().StatusCode != HttpStatusCode.OK) 
                 return model.DetectBlankFields();
             else if (model.CheckNickNameAlreadyUsed().StatusCode != HttpStatusCode.OK)

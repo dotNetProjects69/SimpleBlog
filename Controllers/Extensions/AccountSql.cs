@@ -3,23 +3,19 @@ using SimpleBlog.Models.Account;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using static System.Console;
+using static SimpleBlog.Shared.GlobalParams;
 
-[assembly: InternalsVisibleTo("SimpleBlogTest")]
+[assembly: InternalsVisibleTo("SimpleBlogTests")]
 
 namespace SimpleBlog.Controllers.Extensions
 {
     public class AccountSql
     {
-        private static readonly IConfiguration _configuration = new ConfigurationBuilder()
-                                                                    .AddJsonFile("appsettings.json")
-                                                                    .Build();
-
-        private static readonly string _accountsData = _configuration.GetConnectionString("AccountsData") ?? "";
 
         internal static void DropTable(string tableName)
         {
             string sqlCommand = $"DROP TABLE [{tableName}]";
-            SqliteConnection connection = new(_accountsData);
+            SqliteConnection connection = new(GetAccountsDataPath());
             SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
             try
@@ -32,48 +28,60 @@ namespace SimpleBlog.Controllers.Extensions
             }
         }
         
-        public static T InstantiateAccountModel<T>(string parameter, string value) where T : class, IAccount, new()
+        internal static T InstantiateAccountModelOrEmpty<T>(string parameter, string value) where T : class, IAccount, new()
         {
             T model = new();
-            IEnumerable<string> data = SelectFromTable("*", parameter, value);
-            if (data.Count() == 0) return model;
+            IReadOnlyList<string> data = SelectFromTableByWhere("*", parameter, value);
+            if (!data.Any()) return model;
 
             // use Visitor pattern
-            if (model is EditAccountModel)
-                model = SetData(model as EditAccountModel ?? new(), data) as T ?? new T();
+            if (model is EditAccountModel editAccountModel)
+                model = SetData(editAccountModel, data) as T ?? new T();
             else
                 model = SetData(model, data);
             return model;
         }
 
-        internal static IEnumerable<string> SelectFromTable(string selectable, string filterParam,
-                                                            string filterName, string tableName = "AuthData")
+        internal static IReadOnlyList<string> SelectFromTableByWhere(string selectable, string filterParam,
+                                                                     string filterName, string tableName = "AuthData")
         {
-            List<string> data = new ();
-            string sqlCommand = $"SELECT {selectable} FROM {tableName} WHERE {filterParam} = '{filterName}'";
-            using SqliteConnection connection = new(_accountsData);
+            string filter = $"WHERE {filterParam} = '{filterName}'";
+            if(SelectFromTable(selectable, filter, tableName).Any()) 
+                return SelectFromTable(selectable, filter, tableName).First();
+            return new List<string>();
+        }
+
+        internal static IReadOnlyList<IReadOnlyList<string>> SelectAllFromTable(string filter = "", string tableName = "AuthData")
+        {
+            return SelectFromTable("*", filter, tableName);
+        }
+
+        internal static IReadOnlyList<IReadOnlyList<string>> SelectFromTable(string selectable, string filter = "",
+                                                                             string tableName = "AuthData")
+        {
+            List<List<string>> accounts = new();
+            string sqlCommand = $"SELECT {selectable} FROM {tableName} {filter}";
+            using SqliteConnection connection = new(GetAccountsDataPath());
             using SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
             try
             {
                 SqliteDataReader reader = command.ExecuteReader();
-                reader.Read();
-                if (reader.HasRows && reader is not null)
+                while (reader.Read())
                 {
-                    if (selectable == "*")
-                    for (int i = 0; i < 8; i++)
-                            data.Add(reader.GetString(i));
-                    else
-                        data.Add(reader.GetString(0));
-                } 
-                return data;
+                    List<string> account = new();
+                    for (var i = 0; i < reader.FieldCount; i++) 
+                        account.Add(reader.GetString(i));
+                    accounts.Add(account);
+                }
+                return accounts;
             }
             catch (Exception ex)
             {
                 WriteLine(ex.Message);
             }
-            
-            return data;
+
+            return accounts;
         }
 
         private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccount

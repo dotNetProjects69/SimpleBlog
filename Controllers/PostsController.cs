@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models;
 using SimpleBlog.Models.ViewModels;
 using static SimpleBlog.Models.TempData;
+using static SimpleBlog.Shared.GlobalParams;
+using static SimpleBlog.Controllers.Extensions.PostSql;
+using SimpleBlog.Models.Post;
 
 namespace SimpleBlog.Controllers
 {
@@ -19,7 +21,7 @@ namespace SimpleBlog.Controllers
             _logger = logger;
             _configuration = configuration;
             _format = _configuration["DateTimeFormat"] ?? "";
-            _accountsData = _configuration.GetConnectionString("AccountsData") ?? "";
+            _accountsData = GetAccountsDataPath();
         }
 
         public IActionResult Index()
@@ -40,7 +42,7 @@ namespace SimpleBlog.Controllers
             PostModel post = GetPostById(id);
             PostViewModel postViewModel = new()
             {
-                Post = post
+                ViewablePost = post
             };
             return View(postViewModel);
         }
@@ -50,7 +52,7 @@ namespace SimpleBlog.Controllers
             PostModel post = GetPostById(id);
             PostViewModel postViewModel = new()
             {
-                Post = post
+                ViewablePost = post
             };
             return View(postViewModel);
         }
@@ -64,14 +66,14 @@ namespace SimpleBlog.Controllers
         {
             return new PostViewModel
             {
-                PostList = PostSql.GetPosts("*", AccountTableName)
+                PostList = GetPosts("*", AccountTableName)
             };
         }
 
-        public ActionResult Insert(PostModel post)
+        public ActionResult Insert(PostModel viewablePost)
         {
-            post.CreatedAt = DateTime.Now;
-            post.UpdatedAt = DateTime.Now;
+            viewablePost.CreatedAt = DateTime.Now;
+            viewablePost.UpdatedAt = DateTime.Now;
 
 
             using (SqliteConnection connection = new(_accountsData))
@@ -80,7 +82,7 @@ namespace SimpleBlog.Controllers
                 connection.Open();
                 command.CommandText = $"INSERT INTO [{AccountTableName}] " +
                     $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
-                    $"('{post.Title}', '{post.Body}', '{post.CreatedAt.ToString(_format)}', '{post.UpdatedAt.ToString(_format)}')";
+                    $"('{viewablePost.Title}', '{viewablePost.Body}', '{viewablePost.CreatedAt.ToString(_format)}', '{viewablePost.UpdatedAt.ToString(_format)}')";
                 try
                 {
                     command.ExecuteNonQuery();
@@ -98,7 +100,7 @@ namespace SimpleBlog.Controllers
         {
             post.UpdatedAt = DateTime.Now;
 
-            using (SqliteConnection connection = new (_accountsData))
+            using (SqliteConnection connection = new(_accountsData))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -127,17 +129,14 @@ namespace SimpleBlog.Controllers
         {
             using (SqliteConnection connection = new (_accountsData))
             {
-                using (var command = connection.CreateCommand())
-                {
-                    connection.Open();
-                    command.CommandText = $"DELETE from [{AccountTableName}] WHERE Id = '{id}'";
-                    command.ExecuteNonQuery();
-                }
+                using var command = connection.CreateCommand();
+                connection.Open();
+                command.CommandText = $"DELETE from [{AccountTableName}] WHERE Id = '{id}'";
+                command.ExecuteNonQuery();
             }
 
             return Json(new object { });
         }
-
     }
 
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
-using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models.Account;
+using static SimpleBlog.Controllers.Extensions.AccountSql;
+using static SimpleBlog.Models.TempData;
+using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers
 {
@@ -20,9 +22,7 @@ namespace SimpleBlog.Controllers
         {
             if (Models.TempData.AccountTableName == string.Empty)
                 return RedirectToAction("Index", "SignUp");
-            AccountInfoModel accountModel = AccountSql
-                                            .InstantiateAccountModel<AccountInfoModel>("nickname",
-                                                                                       Models.TempData.AccountTableName);
+            AccountInfoModel accountModel = InstantiateAccountModelOrEmpty<AccountInfoModel>("nickname", AccountTableName);
             return View(accountModel);
         }
 
@@ -45,20 +45,20 @@ namespace SimpleBlog.Controllers
         
         public IActionResult Update(EditAccountModel model)
         {
-            model = AccountSql.InstantiateAccountModel<EditAccountModel>("NickName",
-                                                                            Models.TempData.AccountTableName);
+            model = InstantiateAccountModelOrEmpty<EditAccountModel>("NickName",
+                                                                      Models.TempData.AccountTableName);
             return View("EditAccount", model);
         }
 
         private void DeleteAccountTable()
         {
-            AccountSql.DropTable(Models.TempData.AccountTableName);
+            DropTable(Models.TempData.AccountTableName);
         }
 
         private void DeleteAccountData()
         {
             string sqlCommand = $"DELETE FROM AuthData WHERE NickName = '{Models.TempData.AccountTableName}'";
-            SqliteConnection connection = new(_configuration.GetConnectionString("AccountsData"));
+            SqliteConnection connection = new(GetAccountsDataPath());
             SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
             try

@@ -1,6 +1,6 @@
 ﻿using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
-using SimpleBlog.Models.Authentification;
+using SimpleBlog.Models.Authentication;
 using System.Net;
 using System.Net.Mail;
 
@@ -8,18 +8,13 @@ namespace SimpleBlog.Controllers.Extensions
 {
     public static class ValidationInputData
     {
-        private static readonly IConfiguration _configuration = new ConfigurationBuilder()
-                                                                    .AddJsonFile("appsettings.json")
-                                                                    .Build();
-
-        public static IConfiguration Configuration => _configuration;
-
         internal static ErrorModel DetectBlankFields(this IVerifiableFull model)
         {
             bool result = string.IsNullOrWhiteSpace(model.Name) || !IsValidEmail(model.Email) ||
                     string.IsNullOrWhiteSpace(model.NickName) || string.IsNullOrWhiteSpace(model.Password);
             ErrorModel errorModel = new();
 
+            
             if (result)
                 errorModel = new(HttpStatusCode.BadRequest, "Some required fields are blank");
 
@@ -31,7 +26,7 @@ namespace SimpleBlog.Controllers.Extensions
             ErrorModel errorModel = new();
 
             if (AccountExist("NickName", newDataModel.NickName))
-                errorModel = new ErrorModel(HttpStatusCode.Conflict, "This nickname already used");
+                errorModel = new(HttpStatusCode.Conflict, "This nickname already used");
 
             return errorModel;
         }
@@ -41,7 +36,7 @@ namespace SimpleBlog.Controllers.Extensions
             ErrorModel errorModel = new();
 
             if (!AccountExist("NickName", newDataModel.NickName))
-                errorModel = new ErrorModel(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
+                errorModel = new(HttpStatusCode.NotFound, "An account with such a nickname does not exist");
 
             return errorModel;
         }
@@ -51,7 +46,7 @@ namespace SimpleBlog.Controllers.Extensions
             ErrorModel errorModel = new();
 
             if (AccountExist("Email", newDataModel.Email))
-                errorModel = new ErrorModel(HttpStatusCode.Conflict, "This email is already in use");
+                errorModel = new(HttpStatusCode.Conflict, "This email is already in use");
 
             return errorModel;
         }
@@ -61,18 +56,18 @@ namespace SimpleBlog.Controllers.Extensions
             ErrorModel errorModel = new();
 
             if (!AccountExist("Email", newDataModel.Email))
-                errorModel = new ErrorModel(HttpStatusCode.NotFound, "An account with such an email does not exist");
+                errorModel = new(HttpStatusCode.NotFound, "An account with such an email does not exist");
 
             return errorModel;
         }
 
         private static bool AccountExist(string paramName, string paramValue)
         {
-            EditAccountModel model = AccountSql.InstantiateAccountModel<EditAccountModel>(paramName, paramValue);
+            EditAccountModel model = AccountSql.InstantiateAccountModelOrEmpty<EditAccountModel>(paramName, paramValue);
             return model.Id != new Guid();
         }
 
-        internal static bool IsValidEmail(string email)
+        private static bool IsValidEmail(string email)
         {
             string trimmedEmail = email.Trim();
 

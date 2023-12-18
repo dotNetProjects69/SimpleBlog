@@ -1,4 +1,42 @@
-﻿@page
-@model SimpleBlog.Views.Search.IndexModel
-@{
-}
+﻿@model Search;
+
+<form id="fporm-action"
+    method="post"
+    class="form-horizontal"
+    role="form">
+
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mt-3 mb-5">
+            <label asp-for="Nickname" class="form-label mr-3"></label>
+            <div class="d-flex align-items-center"> <!-- Обертка для элементов -->
+                <input type="text" asp-for="Nickname" class="form-control" />
+                <button asp-controller="Search"
+                        asp-action="Search"
+                        type="submit"
+                        style="background-color: white; color: forestgreen"
+                        id="LogInByNicknameButton"
+                        class="btn btn-success ms-4"> <!-- Добавлен класс mt-3 для отступа -->
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="ccol-xl-10 col-lg-10 col-md-10 col-sm-10">
+            <div class="posts-container">
+                @foreach (var accountNickname in Model.Result)
+                {
+                    <div class="post">
+                        @* <h2><a asp-area="" asp-controller="ViewablePosts" asp-action="ViewViewablePost" asp-route-id="@accountNicknames.Id">@accountNicknames.Title</a></h2> *@
+                        <p><a asp-controller="Search"
+                              asp-action="ShowAllViewableAccountPosts"
+                              asp-route-nickname="@accountNickname">@accountNickname</a>
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</form>

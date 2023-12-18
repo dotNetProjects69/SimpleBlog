@@ -1,4 +1,4 @@
-﻿using SimpleBlog.Models.Authentification;
+﻿using SimpleBlog.Models.Authentication;
 
 namespace SimpleBlog.Models.Account
 {

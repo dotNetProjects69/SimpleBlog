@@ -1,4 +1,4 @@
-﻿using SimpleBlog.Models.Authentification;
+﻿using SimpleBlog.Models.Authentication;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SimpleBlogTest")]

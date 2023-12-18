@@ -1,10 +1,10 @@
 ﻿@model PostViewModel
 
 <div class="post">
-	<h2>@Model.Post.Title</h2>
-	<h5>Created At: @Model.Post.CreatedAt </h5>
-	<h5>Last Modified At: @Model.Post.UpdatedAt</h5>
-	<p>@Model.Post.Body</p>
+	<h2>@Model.ViewablePost.Title</h2>
+	<h5>Created At: @Model.ViewablePost.CreatedAt </h5>
+	<h5>Last Modified At: @Model.ViewablePost.UpdatedAt</h5>
+	<p>@Model.ViewablePost.Body</p>
 </div>
 
 <div class="post-actions">
@@ -13,10 +13,10 @@
 			 asp-area=""
 			 asp-controller="Posts"
 			 asp-action="EditPost"
-			 asp-route-id="@Model.Post.Id">Update</a></li>
+			 asp-route-id="@Model.ViewablePost.Id">Update</a></li>
 		<li><input type="submit"
 				   class="btn btn-danger"
 				   value="Delete"
-				   onClick="deletePost(@Model.Post.Id)" /></li>
+				   onClick="deletePost(@Model.ViewablePost.Id)" /></li>
 	</ul>
 </div>
