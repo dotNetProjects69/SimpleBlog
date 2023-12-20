@@ -26,7 +26,7 @@ namespace SimpleBlog.Controllers
 
         public IActionResult Index()
         {
-            if (AccountTableName == string.Empty)
+            if (GetCurrentNickname() == string.Empty)
                 return RedirectToAction("Index", "SignUp");
             PostViewModel postListViewModel = GetAllPosts();
             return View(postListViewModel);
@@ -59,14 +59,14 @@ namespace SimpleBlog.Controllers
 
         private PostModel GetPostById(int id)
         {
-            return PostSql.GetPostById("*", AccountTableName, id).First();
+            return PostSql.GetPostById("*", GetCurrentNickname(), id).First();
         }
 
         private PostViewModel GetAllPosts()
         {
             return new PostViewModel
             {
-                PostList = GetPosts("*", AccountTableName)
+                PostList = GetPosts("*", GetCurrentNickname())
             };
         }
 
@@ -80,7 +80,7 @@ namespace SimpleBlog.Controllers
             {
                 using SqliteCommand command = connection.CreateCommand();
                 connection.Open();
-                command.CommandText = $"INSERT INTO [{AccountTableName}] " +
+                command.CommandText = $"INSERT INTO [{GetCurrentNickname()}] " +
                     $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
                     $"('{viewablePost.Title}', '{viewablePost.Body}', '{viewablePost.CreatedAt.ToString(_format)}', '{viewablePost.UpdatedAt.ToString(_format)}')";
                 try
@@ -105,7 +105,7 @@ namespace SimpleBlog.Controllers
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"UPDATE [{AccountTableName}] SET Title = " +
+                    command.CommandText = $"UPDATE [{GetCurrentNickname()}] SET Title = " +
                                           $"'{post.Title}', " +
                                           $"Body = '{post.Body}', " +
                                           $"UpdatedAt = '{post.UpdatedAt}' " +
@@ -131,11 +131,16 @@ namespace SimpleBlog.Controllers
             {
                 using var command = connection.CreateCommand();
                 connection.Open();
-                command.CommandText = $"DELETE from [{AccountTableName}] WHERE Id = '{id}'";
+                command.CommandText = $"DELETE from [{GetCurrentNickname()}] WHERE Id = '{id}'";
                 command.ExecuteNonQuery();
             }
 
             return Json(new object { });
+        }
+
+        private string GetCurrentNickname()
+        {
+            return HttpContext.Session.GetString(NicknameSessionKey) ?? "";
         }
     }
 

@@ -3,6 +3,7 @@ using SimpleBlog.Models;
 using SimpleBlog.Models.Authentication;
 using System.Net;
 using static SimpleBlog.Controllers.Extensions.AccountSql;
+using static SimpleBlog.Models.TempData;
 
 namespace SimpleBlog.Controllers
 {
@@ -33,9 +34,9 @@ namespace SimpleBlog.Controllers
             return model.Error.StatusCode == HttpStatusCode.OK;
         }
 
-        private protected virtual void SetAccountTableName(SignInModel model)
+        private protected virtual void SetCurrentNickname(SignInModel model)
         {
-            Models.TempData.AccountTableName = model.NickName;
+            HttpContext.Session.SetString(NicknameSessionKey, model.NickName);
         }
 
         private protected virtual void ValidateInputPassword(SignInModel model)

@@ -20,9 +20,9 @@ namespace SimpleBlog.Controllers
 
         public IActionResult Index()
         {
-            if (Models.TempData.AccountTableName == string.Empty)
+            if (GetCurrentNickname() == string.Empty)
                 return RedirectToAction("Index", "SignUp");
-            AccountInfoModel accountModel = InstantiateAccountModelOrEmpty<AccountInfoModel>("nickname", AccountTableName);
+            AccountInfoModel accountModel = InstantiateAccountModelOrEmpty<AccountInfoModel>("nickname", GetCurrentNickname());
             return View(accountModel);
         }
 
@@ -31,33 +31,32 @@ namespace SimpleBlog.Controllers
         {
             DeleteAccountData();
             DeleteAccountTable();
-            Models.TempData.AccountTableName = string.Empty;
+            SetCurrentNickname(string.Empty);
             return RedirectToAction("Index", "SignUp");
         }
 
         
         public IActionResult LogOut()
         {
-            Models.TempData.AccountTableName = string.Empty;
+            SetCurrentNickname(string.Empty);
             return RedirectToAction("Index", "SignUp");
         }
 
         
         public IActionResult Update(EditAccountModel model)
         {
-            model = InstantiateAccountModelOrEmpty<EditAccountModel>("NickName",
-                                                                      Models.TempData.AccountTableName);
+            model = InstantiateAccountModelOrEmpty<EditAccountModel>("NickName", GetCurrentNickname());
             return View("EditAccount", model);
         }
 
         private void DeleteAccountTable()
         {
-            DropTable(Models.TempData.AccountTableName);
+            DropTable(GetCurrentNickname());
         }
 
         private void DeleteAccountData()
         {
-            string sqlCommand = $"DELETE FROM AuthData WHERE NickName = '{Models.TempData.AccountTableName}'";
+            string sqlCommand = $"DELETE FROM AuthData WHERE NickName = '{GetCurrentNickname()}'";
             SqliteConnection connection = new(GetAccountsDataPath());
             SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
@@ -69,6 +68,16 @@ namespace SimpleBlog.Controllers
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private void SetCurrentNickname(string value)
+        {
+            HttpContext.Session.SetString(NicknameSessionKey, value);
+        }
+
+        private string GetCurrentNickname()
+        {
+            return HttpContext.Session.GetString(NicknameSessionKey) ?? "";
         }
         
     }

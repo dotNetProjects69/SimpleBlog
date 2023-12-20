@@ -23,8 +23,7 @@ namespace SimpleBlog.Controllers.SignInControllers
                 ValidateInputPassword(model);
             if (StatusCodeIsOk(model))
             {
-                SetAccountTableName(model);
-                SetCurrentGuid(model);
+                SetCurrentNickname(model);
                 return RedirectToAction("Index", "Posts");
             }
             return Index(model);
@@ -35,19 +34,9 @@ namespace SimpleBlog.Controllers.SignInControllers
             return RedirectToAction("Index", "SignInByEmail");
         }
 
-        private void SetCurrentGuid(SignInModel model)
-        {
-            Models.TempData.AccountId = new Guid(GetGuidByNickname(model));
-        }
-
         private void ValidateNickName(SignInModel signInModel)
         {
             signInModel.Error = signInModel.CheckNickNameDoesNotExist();
-        }
-
-        private string GetGuidByNickname(SignInModel model)
-        {
-            return GetGuid("Nickname", model.NickName);
         }
     }
 }

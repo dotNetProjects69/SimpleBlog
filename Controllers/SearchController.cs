@@ -20,7 +20,7 @@ namespace SimpleBlog.Controllers
             search.Result.Clear();
             var result = SelectAllFromTable($"WHERE NickName LIKE '%{search.Nickname}%'");
             foreach (var account in result)
-                if (account[7] != Models.TempData.AccountTableName)
+                if (account[7] != Models.TempData.NicknameSessionKey)
                     search.Result.Add(account[7]);
             return RedirectToAction("Index", search);
         }

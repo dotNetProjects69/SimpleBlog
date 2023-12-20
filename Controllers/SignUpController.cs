@@ -6,6 +6,7 @@ using SimpleBlog.Models.Authentication;
 using System.Net;
 using static System.Console;
 using static SimpleBlog.Shared.GlobalParams;
+using static SimpleBlog.Models.TempData;
 
 namespace SimpleBlog.Controllers
 {
@@ -70,7 +71,7 @@ namespace SimpleBlog.Controllers
             try
             {
                 command.ExecuteNonQuery();
-                SetCurrentAccountTableNAme(model);
+                SetCurrentNickname(model);
             }
             catch (Exception ex)
             {
@@ -87,7 +88,6 @@ namespace SimpleBlog.Controllers
             try
             {
                 command.ExecuteNonQuery();
-                SetCurrentAccointId(model);
             }
             catch (Exception ex)
             {
@@ -100,14 +100,9 @@ namespace SimpleBlog.Controllers
             model.Id = Guid.NewGuid();
         }
 
-        private static void SetCurrentAccountTableNAme(SignUpModel model)
+        private void SetCurrentNickname(SignUpModel model)
         {
-            Models.TempData.AccountTableName = model.NickName;
-        }
-
-        private static void SetCurrentAccointId(SignUpModel model)
-        {
-            Models.TempData.AccountId = model.Id;
+            HttpContext.Session.SetString(NicknameSessionKey, model.NickName);
         }
     }
 }

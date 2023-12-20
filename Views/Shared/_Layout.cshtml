@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,11 +38,18 @@
                                 <img src="/Images/Icons/Home.png" title="Home" alt="Home" width="20" />
                            </a>
                         </li>
-                        @if(SimpleBlog.Models.TempData.AccountTableName != string.Empty)
+                        @{
+                            string nicknameSessionKey = SimpleBlog.Models.TempData.NicknameSessionKey;
+                            ISession? session = HttpContextAccessor.HttpContext?.Session;
+
+                            // Получение значения переменной сессии
+                            string nickname = session?.GetString(nicknameSessionKey) ?? "";
+                        }
+                        @if (nickname != string.Empty)
                         {
                             @Html.PartialAsync("_UserAuthenticated").Result
                         }
-                        @if(SimpleBlog.Models.TempData.AccountTableName == string.Empty)
+                        @if (nickname == string.Empty)
                         {
                             @Html.PartialAsync("_UserNotAuthenticated").Result
                         }

@@ -4,6 +4,7 @@ using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
 using System.Net;
+using static SimpleBlog.Models.TempData;
 using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers
@@ -41,14 +42,16 @@ namespace SimpleBlog.Controllers
                     
                     connection.Open();
                     RewriteAccount(model);
-                    if (model.NickName != GetNickname())
+                    if (model.NickName != GetCurrentNickname())
                         RenameAccountTable(model);
-                    Models.TempData.AccountTableName = model.NickName;
+                    SetCurrentNickname(model);
                 }
             }
             new NotFoundResult();
             return RedirectToAction("Index", "PersonalAccount");
         }
+
+        
 
         private ErrorModel CheckAndSetError(EditAccountModel model)
         {
@@ -90,7 +93,7 @@ namespace SimpleBlog.Controllers
 
         private void RenameAccountTable(EditAccountModel model)
         {
-            string sqlCommand = $"ALTER TABLE {Models.TempData.AccountTableName} RENAME TO {model.NickName.Trim()}";
+            string sqlCommand = $"ALTER TABLE {GetCurrentNickname()} RENAME TO {model.NickName.Trim()}";
             using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using (var command = connection.CreateCommand())
@@ -109,9 +112,14 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private string GetNickname()
+        private void SetCurrentNickname(EditAccountModel model)
         {
-            return Models.TempData.AccountTableName;
+            HttpContext.Session.SetString(NicknameSessionKey, model.NickName);
+        }
+
+        private string GetCurrentNickname()
+        {
+            return HttpContext.Session.GetString(NicknameSessionKey) ?? "";
         }
     }
 }
