@@ -21,5 +21,21 @@ namespace SimpleBlog.Models
 
         public HttpStatusCode StatusCode { get => _statusCode; set => _statusCode = value; }
         public string Message { get => _message; set => _message = value; }
+
+        internal void SetErrorInfo(HttpStatusCode statusCode, string message)
+        {
+            _statusCode = statusCode;
+            _message = message;
+        }
+
+        internal bool StatusCodeIsOk()
+        {
+            return _statusCode == HttpStatusCode.OK;
+        }
+
+        internal bool StatusCodeIsNotOk()
+        {
+            return !StatusCodeIsOk();
+        }
     }
 }

@@ -4,6 +4,9 @@ using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
 using System.Net;
+using SimpleBlog.Models.Interfaces.AccountModelParts;
+using SimpleBlog.Validators.Base;
+using SimpleBlog.Validators.ValidatorType;
 using static SimpleBlog.Models.TempData;
 using static SimpleBlog.Shared.GlobalParams;
 
@@ -42,7 +45,7 @@ namespace SimpleBlog.Controllers
                     
                     connection.Open();
                     RewriteAccount(model);
-                    if (model.NickName != GetCurrentNickname())
+                    if (model.Nickname != GetCurrentNickname())
                         RenameAccountTable(model);
                     SetCurrentNickname(model);
                 }
@@ -55,13 +58,15 @@ namespace SimpleBlog.Controllers
 
         private ErrorModel CheckAndSetError(EditAccountModel model)
         {
-            if (model.DetectBlankFields().StatusCode != HttpStatusCode.OK)
-                return model.DetectBlankFields();
-            else if (model.CheckNickNameAlreadyUsed().StatusCode != HttpStatusCode.OK)
-                return model.CheckNickNameAlreadyUsed();
-            else if (model.CheckEmailAlreadyExist().StatusCode != HttpStatusCode.OK)
-                return model.CheckEmailAlreadyExist();
-            return new ErrorModel();
+            ValidationChain<IAccountModelPart> chain = new();
+            chain
+                .SetNext(new ModelHasNoBlankFields())
+                .SetNext(new NicknameMustNotUsed())
+                .SetNext(new NicknameCharsIsCorrect())
+                .SetNext(new EmailMustNotExist())
+                .SetNext(new PasswordLengthEnough());
+
+            return chain.Validate(model);
         }
 
         private void RewriteAccount(EditAccountModel model)
@@ -77,7 +82,7 @@ namespace SimpleBlog.Controllers
                                           $"DateOfBirth = '{model.DateOfBirth}', " +
                                           $"Email = '{model.Email.Trim()}', " +
                                           $"Password = '{model.Password.Trim()}', " +
-                                          $"NickName = '{model.NickName.Trim()}' " +
+                                          $"NickName = '{model.Nickname.Trim()}' " +
                                           $"WHERE UserID = '{model.Id}'";
                     try
                     {
@@ -93,7 +98,7 @@ namespace SimpleBlog.Controllers
 
         private void RenameAccountTable(EditAccountModel model)
         {
-            string sqlCommand = $"ALTER TABLE {GetCurrentNickname()} RENAME TO {model.NickName.Trim()}";
+            string sqlCommand = $"ALTER TABLE {GetCurrentNickname()} RENAME TO {model.Nickname.Trim()}";
             using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
                 using (var command = connection.CreateCommand())
@@ -114,7 +119,7 @@ namespace SimpleBlog.Controllers
 
         private void SetCurrentNickname(EditAccountModel model)
         {
-            HttpContext.Session.SetString(NicknameSessionKey, model.NickName);
+            HttpContext.Session.SetString(NicknameSessionKey, model.Nickname);
         }
 
         private string GetCurrentNickname()

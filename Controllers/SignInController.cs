@@ -24,9 +24,9 @@ namespace SimpleBlog.Controllers
 
         public abstract IActionResult Index(SignInModel? model = null);
 
-        private protected string GetGuid(string filterParam, string fiterValue)
+        private protected string GetGuid(string filterParam, string filterValue)
         {
-            return SelectFromTableByWhere("UserID", filterParam, fiterValue).First();
+            return SelectFromTableByWhere("UserID", filterParam, filterValue).First();
         }
 
         private protected bool StatusCodeIsOk(SignInModel model)
@@ -36,21 +36,7 @@ namespace SimpleBlog.Controllers
 
         private protected virtual void SetCurrentNickname(SignInModel model)
         {
-            HttpContext.Session.SetString(NicknameSessionKey, model.NickName);
-        }
-
-        private protected virtual void ValidateInputPassword(SignInModel model)
-        {
-            ErrorModel errorModel = new ();
-            string password = model.Password;
-            IReadOnlyList<string> result = 
-                SelectFromTableByWhere("Password", "NickName", model.NickName);
-            if (!result.Any() || result.ElementAt(0) != password)
-            {
-                errorModel.StatusCode = HttpStatusCode.BadRequest;
-                errorModel.Message = "Password not valid";
-            }
-            model.Error = errorModel;
+            HttpContext.Session.SetString(NicknameSessionKey, model.Nickname);
         }
 
         

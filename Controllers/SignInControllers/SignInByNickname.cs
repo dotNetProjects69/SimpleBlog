@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models.Authentication;
+using SimpleBlog.Validators.ValidatorType;
+using static SimpleBlog.Controllers.SignInControllers.PasswordComparer;
 
 namespace SimpleBlog.Controllers.SignInControllers
 {
@@ -20,7 +21,7 @@ namespace SimpleBlog.Controllers.SignInControllers
             model ??= new();
             ValidateNickName(model);
             if (StatusCodeIsOk(model))
-                ValidateInputPassword(model);
+                CompareInputPasswordByNickname(model);
             if (StatusCodeIsOk(model))
             {
                 SetCurrentNickname(model);
@@ -36,7 +37,7 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         private void ValidateNickName(SignInModel signInModel)
         {
-            signInModel.Error = signInModel.CheckNickNameDoesNotExist();
+            signInModel.Error = new NickNameMustUsed().Validate(signInModel);
         }
     }
 }

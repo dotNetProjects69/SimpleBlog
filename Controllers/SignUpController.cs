@@ -7,6 +7,9 @@ using System.Net;
 using static System.Console;
 using static SimpleBlog.Shared.GlobalParams;
 using static SimpleBlog.Models.TempData;
+using SimpleBlog.Models.Interfaces.AccountModelParts;
+using SimpleBlog.Validators.Base;
+using SimpleBlog.Validators.ValidatorType;
 
 namespace SimpleBlog.Controllers
 {
@@ -53,18 +56,22 @@ namespace SimpleBlog.Controllers
 
         private ErrorModel CheckAndSetError(SignUpModel model)
         {
-            if (model.DetectBlankFields().StatusCode != HttpStatusCode.OK) 
-                return model.DetectBlankFields();
-            else if (model.CheckNickNameAlreadyUsed().StatusCode != HttpStatusCode.OK)
-                return model.CheckNickNameAlreadyUsed();
-            else if (model.CheckEmailAlreadyExist().StatusCode != HttpStatusCode.OK)
-                return model.CheckEmailAlreadyExist();
-            return new ErrorModel();
+            ValidationChain<IAccountModelPart> chain = new();
+            chain
+                .SetNext(new ModelHasNoBlankFields())
+                .SetNext(new NicknameMustNotUsed())
+                .SetNext(new NicknameCharsIsCorrect())
+                .SetNext(new EmailMustNotExist())
+                .SetNext(new PasswordConfirmIsCorrectly())
+                .SetNext(new PasswordLengthEnough())
+                .SetNext(new PasswordHasNoGaps());
+
+            return chain.Validate(model);
         }
 
         private void AddAccountTable(SignUpModel model, SqliteCommand command)
         {
-            command.CommandText = $"create table [{model.NickName}] (" +
+            command.CommandText = $"create table [{model.Nickname}] (" +
                                                   $"Id  integer primary key autoincrement, " +
                                                   $"Title text, Body text, " +
                                                   $"CreatedAt text, UpdatedAt text)";
@@ -75,7 +82,7 @@ namespace SimpleBlog.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                WriteLine(ex.Message);
             }
         }
 
@@ -84,7 +91,7 @@ namespace SimpleBlog.Controllers
             command.CommandText = $"INSERT INTO AuthData (Name, Surname, DateOfBirth, Email, Password, UserID, NickName) " +
                                   $"VALUES ('{model.Name.Trim()}', '{model.Surname.Trim()}', " +
                                           $"'{model.DateOfBirth}', '{model.Email.Trim()}', " +
-                                          $"'{model.Password.Trim()}', '{model.Id}', '{model.NickName.Trim()}')";
+                                          $"'{model.Password.Trim()}', '{model.Id}', '{model.Nickname.Trim()}')";
             try
             {
                 command.ExecuteNonQuery();
@@ -102,7 +109,7 @@ namespace SimpleBlog.Controllers
 
         private void SetCurrentNickname(SignUpModel model)
         {
-            HttpContext.Session.SetString(NicknameSessionKey, model.NickName);
+            HttpContext.Session.SetString(NicknameSessionKey, model.Nickname);
         }
     }
 }

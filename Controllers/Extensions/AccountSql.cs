@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 using SimpleBlog.Models.Account;
+using SimpleBlog.Models.Interfaces.AccountModelParts;
 using System.Globalization;
-using System.Net;
 using System.Runtime.CompilerServices;
-using static System.Console;
 using static SimpleBlog.Shared.GlobalParams;
+using static System.Console;
 
 [assembly: InternalsVisibleTo("SimpleBlogTests")]
 
@@ -29,6 +29,12 @@ namespace SimpleBlog.Controllers.Extensions
             }
         }
         
+        internal static bool AccountExist(string paramName, string paramValue)
+        {
+            EditAccountModel model = InstantiateAccountModelOrEmpty<EditAccountModel>(paramName, paramValue);
+            return model.Id != new Guid();
+        }
+
         internal static T InstantiateAccountModelOrEmpty<T>(string parameter, string value) where T : class, IAccount, new()
         {
             T model = new();
@@ -85,7 +91,7 @@ namespace SimpleBlog.Controllers.Extensions
             return accounts;
         }
 
-        private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccount
+        private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccount 
         {
             model.Id = new(data.ElementAt(6));
             model.Name = data.ElementAt(1);
@@ -96,7 +102,7 @@ namespace SimpleBlog.Controllers.Extensions
                                   out DateOnly dateOnly);
             model.DateOfBirth = dateOnly;
             model.Email = data.ElementAt(4);
-            model.NickName = data.ElementAt(7);
+            model.Nickname = data.ElementAt(7);
             return model;
         }
 

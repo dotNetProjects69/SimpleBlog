@@ -1,19 +1,14 @@
-﻿namespace SimpleBlog.Models.Account
-{
-    public class AccountInfoModel : IAccount
-    {
-        private Guid _id;
-        private string name = string.Empty;
-        private string surname = string.Empty;
-        private DateOnly dateOfBirth;   
-        private string email = string.Empty;
-        private string nickName = string.Empty;
+﻿using SimpleBlog.Models.Interfaces.AccountModelParts;
 
-        public string Name { get => name; set => name = value; }
-        public string Surname { get => surname; set => surname = value; }
-        public DateOnly DateOfBirth { get => dateOfBirth; set => dateOfBirth = value; }
-        public string Email { get => email; set => email = value; }
-        public string NickName { get => nickName; set => nickName = value; }
-        public Guid Id { get => _id; set => _id = value; }
+namespace SimpleBlog.Models.Account
+{
+    public class AccountInfoModel : IAccount, IEmail
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public DateOnly DateOfBirth { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Nickname { get; set; } = string.Empty;
+        public Guid Id { get; set; }
     }
 }

@@ -1,33 +1,21 @@
-﻿namespace SimpleBlog.Models.Authentication
+﻿using SimpleBlog.Models.Interfaces.AccountModelParts;
+
+namespace SimpleBlog.Models.Authentication
 {
-    public class SignInModel : IVerifiableCore
+    public class SignInModel : IPassword, IEmail, INickname
     {
-        private Guid _id;
-        private string _nickName;
-        private string _email;
-        private string _password;
-        private ErrorModel _error;
-
-        public SignInModel()
-        {
-            _nickName = string.Empty;
-            _email = string.Empty;
-            _password = string.Empty;
-            _error = new();
-        }
-
-        public string NickName { get => _nickName; set => _nickName = value; }
-        public string Email { get => _email; set => _email = value; }
-        public string Password { get => _password; set => _password = value; }
-		public ErrorModel Error { get => _error; set => _error = value; }
-        public Guid Id { get => _id; set => _id = value; }
+        public string Nickname { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public ErrorModel Error { get; set; } = new();
+        public Guid Id { get; set; }
 
         public void Debug()
         {
-            Console.WriteLine($"Id - {_id}\n" +
-                              $"Email - {_email}\n" +
-                              $"Password - {_password}\n" +
-                              $"Nickname - {_nickName}\n");
+            Console.WriteLine($"Id - {Id}\n" +
+                              $"Email - {Email}\n" +
+                              $"Password - {Password}\n" +
+                              $"Nickname - {Nickname}\n");
         }
     }
 }

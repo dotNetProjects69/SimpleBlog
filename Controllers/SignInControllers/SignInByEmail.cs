@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models.Authentication;
-using static SimpleBlog.Controllers.Extensions.AccountSql;
+using SimpleBlog.Validators.ValidatorType;
+using static SimpleBlog.Controllers.SignInControllers.PasswordComparer;
 
 namespace SimpleBlog.Controllers.SignInControllers
 {
@@ -20,20 +20,12 @@ namespace SimpleBlog.Controllers.SignInControllers
         {
             model ??= new();
             ValidateEmail(model);
-            if (StatusCodeIsOk(model))
-            {
-                SetNickname(model);
-                ValidateInputPassword(model);
-            }
-            if (!StatusCodeIsOk(model))
+            if (model.Error.StatusCodeIsOk()) 
+                CompareInputPasswordByEmail(model);
+            if (model.Error.StatusCodeIsNotOk())
                 return Index(model);
             SetCurrentNickname(model);
             return RedirectToAction("Index", "Posts");
-        }
-
-        private static void SetNickname(SignInModel model)
-        {
-            model.NickName = SelectFromTableByWhere("NickName", "Email", model.Email)[0];
         }
 
         public IActionResult LogInByNickname()
@@ -43,7 +35,7 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         private void ValidateEmail(SignInModel model)
         {
-            model.Error = model.CheckEmailDoesNotExist();
+            model.Error = new EmailMustExist().Validate(model);
         }
     }
 }

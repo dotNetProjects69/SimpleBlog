@@ -1,7 +1,7 @@
 ﻿namespace SimpleBlog.Models
 {
-    public class TempData
+    public abstract class TempData
     {
-        public static string NicknameSessionKey { get; } = "nickname";
+        public static string NicknameSessionKey => "nickname";
     }
 }
