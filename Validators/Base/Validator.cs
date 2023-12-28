@@ -27,13 +27,6 @@ namespace SimpleBlog.Validators.Base
                 : new(); // Возвращаем пустую модель ошибок в конце цепочки
         }
 
-        private protected static TP TryTransformIModelPartTo<TP>(T baseModel)
-        {
-            if (baseModel is not TP model)
-                throw new ArgumentException($"Base model is not type of {typeof(TP)}");
-            return model;
-        }
-
         private protected abstract ErrorModel ValidateLogic(IAccountModelPart model);
     }
 }

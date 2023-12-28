@@ -71,14 +71,14 @@ namespace SimpleBlog.Controllers
 
         private void AddAccountTable(SignUpModel model, SqliteCommand command)
         {
-            command.CommandText = $"create table [{model.Nickname}] (" +
+            command.CommandText = $"create table [{model.Id}] (" +
                                                   $"Id  integer primary key autoincrement, " +
                                                   $"Title text, Body text, " +
                                                   $"CreatedAt text, UpdatedAt text)";
             try
             {
                 command.ExecuteNonQuery();
-                SetCurrentNickname(model);
+                SetAccountId(model);
             }
             catch (Exception ex)
             {
@@ -107,9 +107,9 @@ namespace SimpleBlog.Controllers
             model.Id = Guid.NewGuid();
         }
 
-        private void SetCurrentNickname(SignUpModel model)
+        private protected virtual void SetAccountId(SignUpModel model)
         {
-            HttpContext.Session.SetString(NicknameSessionKey, model.Nickname);
+            HttpContext.Session.SetString(AccountIdSessionKey, model.Id.ToString());
         }
     }
 }

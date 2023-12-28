@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Models;
-using SimpleBlog.Models.ViewModels;
 using static SimpleBlog.Controllers.Extensions.AccountSql;
-using static SimpleBlog.Controllers.Extensions.PostSql;
+using static SimpleBlog.Models.TempData;
 
 namespace SimpleBlog.Controllers
 {
@@ -20,7 +19,7 @@ namespace SimpleBlog.Controllers
             search.Result.Clear();
             var result = SelectAllFromTable($"WHERE NickName LIKE '%{search.Nickname}%'");
             foreach (var account in result)
-                if (account[7] != Models.TempData.NicknameSessionKey)
+                if (AccountIdIsNotCurrent(account[7]))
                     search.Result.Add(account[7]);
             return RedirectToAction("Index", search);
         }
@@ -28,6 +27,11 @@ namespace SimpleBlog.Controllers
         public IActionResult ShowAllViewableAccountPosts(string nickname)
         {
             return RedirectToAction("Index", "ViewablePosts", new { nickname });
+        }
+
+        private bool AccountIdIsNotCurrent(string accountId)
+        {
+            return accountId != HttpContext.Session.GetString(AccountIdSessionKey);
         }
     }
 }

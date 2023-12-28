@@ -1,38 +1,38 @@
 ﻿using SimpleBlog.Models;
 using SimpleBlog.Models.Authentication;
+using SimpleBlog.Models.Interfaces.AccountModelParts;
 using System.Net;
+using System.Runtime.CompilerServices;
 using static SimpleBlog.Controllers.Extensions.AccountSql;
 
+[assembly:InternalsVisibleTo("SimpleBlogTests")]
 namespace SimpleBlog.Controllers.SignInControllers
 {
     public abstract class PasswordComparer
     {
-        internal static void CompareInputPasswordByEmail(SignInModel model)
+        internal static ErrorModel CompareInputPasswordByEmail(SignInModel model)
         {
-            IReadOnlyList<string> resultList = 
-                SelectFromTableByWhere("Password", "Email", model.Email);
-            string result = resultList.Any() ? resultList[0] : string.Empty;
-            CheckInputPassword(model, result);
+            return CheckInputPassword(model, "Email", model.Email);
         }
 
-        internal static void CompareInputPasswordByNickname(SignInModel model)
+        internal static ErrorModel CompareInputPasswordByNickname(SignInModel model)
         {
-            IReadOnlyList<string> resultList = 
-                SelectFromTableByWhere("Password", "NickName", model.Nickname);
-            string result = resultList.Any() ? resultList[0] : string.Empty;
-            CheckInputPassword(model, result);
+            return CheckInputPassword(model, "NickName", model.Nickname);
         }
 
-        private static void CheckInputPassword(SignInModel model, string result)
+        private static ErrorModel CheckInputPassword(SignInModel model, string filterParam, string filterName)
         {
-            ErrorModel errorModel = new ();
+            ErrorModel errorModel = new();
+            IReadOnlyList<string> resultList = 
+                SelectFromTableByWhere("Password", filterParam, filterName);
+            string result = resultList.Any() ? resultList[0] : string.Empty;
             string password = model.Password;
             if (result != password)
             {
                 errorModel.StatusCode = HttpStatusCode.BadRequest;
                 errorModel.Message = "Password not valid";
             }
-            model.Error = errorModel;
+            return errorModel;
         }
     }
 }

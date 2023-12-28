@@ -66,7 +66,7 @@ namespace SimpleBlog.Controllers.Extensions
         internal static IReadOnlyList<IReadOnlyList<string>> SelectFromTable(string selectable, string filter = "",
                                                                              string tableName = "AuthData")
         {
-            List<List<string>> accounts = new();
+            List<List<string>> accounts = [];
             string sqlCommand = $"SELECT {selectable} FROM {tableName} {filter}";
             using SqliteConnection connection = new(GetAccountsDataPath());
             using SqliteCommand command = new(sqlCommand, connection);

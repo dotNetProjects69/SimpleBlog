@@ -5,6 +5,7 @@ using SimpleBlog.Models.ViewModels;
 using static SimpleBlog.Models.TempData;
 using static SimpleBlog.Shared.GlobalParams;
 using static SimpleBlog.Controllers.Extensions.PostSql;
+using static SimpleBlog.Controllers.Extensions.AccountSql;
 using SimpleBlog.Models.Post;
 
 namespace SimpleBlog.Controllers
@@ -26,7 +27,7 @@ namespace SimpleBlog.Controllers
 
         public IActionResult Index()
         {
-            if (GetCurrentNickname() == string.Empty)
+            if (GetCurrentAccountId() == string.Empty)
                 return RedirectToAction("Index", "SignUp");
             PostViewModel postListViewModel = GetAllPosts();
             return View(postListViewModel);
@@ -59,14 +60,14 @@ namespace SimpleBlog.Controllers
 
         private PostModel GetPostById(int id)
         {
-            return PostSql.GetPostById("*", GetCurrentNickname(), id).First();
+            return PostSql.GetPostById("*", GetCurrentAccountId(), id).First();
         }
 
         private PostViewModel GetAllPosts()
         {
             return new PostViewModel
             {
-                PostList = GetPosts("*", GetCurrentNickname())
+                PostList = GetPosts("*", GetCurrentAccountId())
             };
         }
 
@@ -80,7 +81,7 @@ namespace SimpleBlog.Controllers
             {
                 using SqliteCommand command = connection.CreateCommand();
                 connection.Open();
-                command.CommandText = $"INSERT INTO [{GetCurrentNickname()}] " +
+                command.CommandText = $"INSERT INTO [{GetCurrentAccountId()}] " +
                     $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
                     $"('{viewablePost.Title}', '{viewablePost.Body}', '{viewablePost.CreatedAt.ToString(_format)}', '{viewablePost.UpdatedAt.ToString(_format)}')";
                 try
@@ -105,7 +106,7 @@ namespace SimpleBlog.Controllers
                 using (var command = connection.CreateCommand())
                 {
                     connection.Open();
-                    command.CommandText = $"UPDATE [{GetCurrentNickname()}] SET Title = " +
+                    command.CommandText = $"UPDATE [{GetCurrentAccountId()}] SET Title = " +
                                           $"'{post.Title}', " +
                                           $"Body = '{post.Body}', " +
                                           $"UpdatedAt = '{post.UpdatedAt}' " +
@@ -131,16 +132,16 @@ namespace SimpleBlog.Controllers
             {
                 using var command = connection.CreateCommand();
                 connection.Open();
-                command.CommandText = $"DELETE from [{GetCurrentNickname()}] WHERE Id = '{id}'";
+                command.CommandText = $"DELETE from [{GetCurrentAccountId()}] WHERE Id = '{id}'";
                 command.ExecuteNonQuery();
             }
 
             return Json(new object { });
         }
 
-        private string GetCurrentNickname()
+        private string GetCurrentAccountId()
         {
-            return HttpContext.Session.GetString(NicknameSessionKey) ?? "";
+            return HttpContext.Session.GetString(AccountIdSessionKey) ?? "";
         }
     }
 

@@ -12,22 +12,22 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         public override IActionResult Index(SignInModel? model = null)
         {
-            model ??= new();
-            return View(_signInByNicknamePagePath, model);
+            _model = model ?? new();
+            return View(_signInByNicknamePagePath, _model);
         }
 
-        public IActionResult LogIn(SignInModel model)
+        public IActionResult LogIn(SignInModel? model)
         {
-            model ??= new();
-            ValidateNickName(model);
-            if (StatusCodeIsOk(model))
-                CompareInputPasswordByNickname(model);
-            if (StatusCodeIsOk(model))
+            _model = model ?? new();
+            ValidateNickName(_model);
+            if (StatusCodeIsOk(_model))
+                _model.Error = CompareInputPasswordByNickname(_model);
+            if (StatusCodeIsOk(_model))
             {
-                SetCurrentNickname(model);
+                SetCurrentAccountIdToGlobal();
                 return RedirectToAction("Index", "Posts");
             }
-            return Index(model);
+            return Index(_model);
         }
 
         public IActionResult LogInByEmail()

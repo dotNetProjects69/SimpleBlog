@@ -39,17 +39,17 @@
                            </a>
                         </li>
                         @{
-                            string nicknameSessionKey = SimpleBlog.Models.TempData.NicknameSessionKey;
+                            string accountIdSessionKey = SimpleBlog.Models.TempData.AccountIdSessionKey;
                             ISession? session = HttpContextAccessor.HttpContext?.Session;
 
                             // Получение значения переменной сессии
-                            string nickname = session?.GetString(nicknameSessionKey) ?? "";
+                            string accountId = session?.GetString(accountIdSessionKey) ?? "";
                         }
-                        @if (nickname != string.Empty)
+                        @if (accountId != string.Empty)
                         {
                             @Html.PartialAsync("_UserAuthenticated").Result
                         }
-                        @if (nickname == string.Empty)
+                        @if (accountId == string.Empty)
                         {
                             @Html.PartialAsync("_UserNotAuthenticated").Result
                         }

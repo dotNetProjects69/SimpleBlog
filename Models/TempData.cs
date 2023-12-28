@@ -2,6 +2,6 @@
 {
     public abstract class TempData
     {
-        public static string NicknameSessionKey => "nickname";
+        public static string AccountIdSessionKey => "accountId";
     }
 }

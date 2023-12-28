@@ -9,6 +9,7 @@ using SimpleBlog.Validators.Base;
 using SimpleBlog.Validators.ValidatorType;
 using static SimpleBlog.Models.TempData;
 using static SimpleBlog.Shared.GlobalParams;
+using SimpleBlog.Models.Authentication;
 
 namespace SimpleBlog.Controllers
 {
@@ -45,9 +46,6 @@ namespace SimpleBlog.Controllers
                     
                     connection.Open();
                     RewriteAccount(model);
-                    if (model.Nickname != GetCurrentNickname())
-                        RenameAccountTable(model);
-                    SetCurrentNickname(model);
                 }
             }
             new NotFoundResult();
@@ -61,9 +59,7 @@ namespace SimpleBlog.Controllers
             ValidationChain<IAccountModelPart> chain = new();
             chain
                 .SetNext(new ModelHasNoBlankFields())
-                .SetNext(new NicknameMustNotUsed())
                 .SetNext(new NicknameCharsIsCorrect())
-                .SetNext(new EmailMustNotExist())
                 .SetNext(new PasswordLengthEnough());
 
             return chain.Validate(model);
@@ -96,35 +92,14 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private void RenameAccountTable(EditAccountModel model)
+        private protected virtual void SetAccountId(EditAccountModel model)
         {
-            string sqlCommand = $"ALTER TABLE {GetCurrentNickname()} RENAME TO {model.Nickname.Trim()}";
-            using (SqliteConnection connection = new(GetAccountsDataPath()))
-            {
-                using (var command = connection.CreateCommand())
-                {
-                    connection.Open();
-                    command.CommandText = sqlCommand;
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-            }
+            HttpContext.Session.SetString(AccountIdSessionKey, model.Id.ToString());
         }
 
-        private void SetCurrentNickname(EditAccountModel model)
+        private string GetCurrentAccountId()
         {
-            HttpContext.Session.SetString(NicknameSessionKey, model.Nickname);
-        }
-
-        private string GetCurrentNickname()
-        {
-            return HttpContext.Session.GetString(NicknameSessionKey) ?? "";
+            return HttpContext.Session.GetString(AccountIdSessionKey) ?? "";
         }
     }
 }

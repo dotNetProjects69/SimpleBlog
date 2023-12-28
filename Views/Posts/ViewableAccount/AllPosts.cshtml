@@ -7,12 +7,18 @@
             @foreach (var p in Model.PostList)
             {
                 <div class="post">
-                    <h2>@p.Title</h2>
-                    <h5 class="text-muted">@p.UpdatedAt.ToString("dd.MM.yyyy HH:mm:ss")</h5>
-                    <p>@p.Body</p>
+                    <p style="color: black; font-size: 40px">@p.Title</p>
+                    <p style="font-size: 30px">@p.Body</p>
+                    <p class="text-muted">@p.CreatedAt.ToString("dd MMMM yyyy HH:mm")</p>
+                    <div style="display: flex; align-items: center; margin-top: 15px;">
+                        <img src="/Images/Icons/Like/Like Active.png" title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+                        <span style="font-size: 25px; color: #333; font-weight: lighter;">
+                            @p.Likes
+                        </span>
+                    </div>
                     <a asp-controller="ViewablePosts"
                        asp-action="ViewPost"
-                       asp-route-id ="@p.Id"
+                       asp-route-id="@p.Id"
                        asp-route-nickname="@p.Nickname">Ещё...</a>
                 </div>
             }

@@ -20,9 +20,9 @@ namespace SimpleBlog.Controllers
 
         public IActionResult Index()
         {
-            if (GetCurrentNickname() == string.Empty)
+            if (GetCurrentAccountId() == string.Empty)
                 return RedirectToAction("Index", "SignUp");
-            AccountInfoModel accountModel = InstantiateAccountModelOrEmpty<AccountInfoModel>("nickname", GetCurrentNickname());
+            AccountInfoModel accountModel = InstantiateAccountModelOrEmpty<AccountInfoModel>("UserID", GetCurrentAccountId());
             return View(accountModel);
         }
 
@@ -31,32 +31,32 @@ namespace SimpleBlog.Controllers
         {
             DeleteAccountData();
             DeleteAccountTable();
-            SetCurrentNickname(string.Empty);
+            SetAccountId(string.Empty);
             return RedirectToAction("Index", "SignUp");
         }
 
         
         public IActionResult LogOut()
         {
-            SetCurrentNickname(string.Empty);
+            SetAccountId(string.Empty);
             return RedirectToAction("Index", "SignUp");
         }
 
         
         public IActionResult Update(EditAccountModel model)
         {
-            model = InstantiateAccountModelOrEmpty<EditAccountModel>("NickName", GetCurrentNickname());
+            model = InstantiateAccountModelOrEmpty<EditAccountModel>("UserID", GetCurrentAccountId());
             return View("EditAccount", model);
         }
 
         private void DeleteAccountTable()
         {
-            DropTable(GetCurrentNickname());
+            DropTable(GetCurrentAccountId());
         }
 
         private void DeleteAccountData()
         {
-            string sqlCommand = $"DELETE FROM AuthData WHERE NickName = '{GetCurrentNickname()}'";
+            string sqlCommand = $"DELETE FROM AuthData WHERE UserID = '{GetCurrentAccountId()}'";
             SqliteConnection connection = new(GetAccountsDataPath());
             SqliteCommand command = new(sqlCommand, connection);
             connection.Open();
@@ -70,14 +70,14 @@ namespace SimpleBlog.Controllers
             }
         }
 
-        private void SetCurrentNickname(string value)
+        private protected virtual void SetAccountId(string value)
         {
-            HttpContext.Session.SetString(NicknameSessionKey, value);
+            HttpContext.Session.SetString(AccountIdSessionKey, value);
         }
 
-        private string GetCurrentNickname()
+        private string GetCurrentAccountId()
         {
-            return HttpContext.Session.GetString(NicknameSessionKey) ?? "";
+            return HttpContext.Session.GetString(AccountIdSessionKey) ?? "";
         }
         
     }

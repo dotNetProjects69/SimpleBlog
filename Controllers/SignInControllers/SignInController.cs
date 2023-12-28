@@ -5,40 +5,41 @@ using System.Net;
 using static SimpleBlog.Controllers.Extensions.AccountSql;
 using static SimpleBlog.Models.TempData;
 
-namespace SimpleBlog.Controllers
+namespace SimpleBlog.Controllers.SignInControllers
 {
     public abstract class SignInController : Controller
     {
         private readonly ILogger<SignInController> _logger;
         private readonly IConfiguration _configuration;
+        private protected SignInModel _model;
         private protected readonly string _signInByNicknamePagePath;
         private protected readonly string _signInByEmailPagePath;
 
-        public SignInController(ILogger<SignInController> logger, IConfiguration configuration)
+        protected SignInController(ILogger<SignInController> logger, IConfiguration configuration)
         {
             _logger = logger;
-            _configuration = configuration; 
+            _configuration = configuration;
             _signInByNicknamePagePath = "/Views/Authentication/SignInByNickname.cshtml";
             _signInByEmailPagePath = "/Views/Authentication/SignInByEmail.cshtml";
         }
 
         public abstract IActionResult Index(SignInModel? model = null);
 
-        private protected string GetGuid(string filterParam, string filterValue)
-        {
-            return SelectFromTableByWhere("UserID", filterParam, filterValue).First();
-        }
-
         private protected bool StatusCodeIsOk(SignInModel model)
         {
             return model.Error.StatusCode == HttpStatusCode.OK;
         }
 
-        private protected virtual void SetCurrentNickname(SignInModel model)
+        private protected void SetCurrentAccountIdToGlobal()
         {
-            HttpContext.Session.SetString(NicknameSessionKey, model.Nickname);
+            string accountId = SelectFromTableByWhere("UserID", "NickName", _model.Nickname)[0];
+            SetAccountIdToModel(accountId);
+            HttpContext.Session.SetString(AccountIdSessionKey, _model.Id.ToString());
         }
 
-        
+        private void SetAccountIdToModel( string accountId)
+        {
+            _model.Id = new(accountId);
+        }
     }
 }

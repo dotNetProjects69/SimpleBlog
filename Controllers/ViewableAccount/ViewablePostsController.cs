@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models.ViewModels;
-using static SimpleBlog.Models.TempData;
-using static SimpleBlog.Shared.GlobalParams;
-using static SimpleBlog.Controllers.Extensions.PostSql;
 using SimpleBlog.Models.Post;
+using SimpleBlog.Models.ViewModels;
+using static SimpleBlog.Controllers.Extensions.AccountSql;
+using static SimpleBlog.Controllers.Extensions.PostSql;
 
 namespace SimpleBlog.Controllers.ViewableAccount
 {
@@ -17,24 +15,29 @@ namespace SimpleBlog.Controllers.ViewableAccount
         {
             PostViewModel postListViewModel = new()
             {
-                PostList = GetPosts("*", nickname)
+                PostList = GetPosts("*", GetUserIdByNickname(nickname))
             };
             foreach (var postModel in postListViewModel.PostList)
             {
                 postModel.Nickname = nickname;
             }
-            return View(_allPostsViewPath,postListViewModel);
+            return View(_allPostsViewPath, postListViewModel);
         }
 
         public IActionResult ViewPost(string nickname, int id)
         {
-            PostModel post = GetPostById("*", nickname, id).First();
+            PostModel post = GetPostById("*", GetUserIdByNickname(nickname), id).First();
             post.Nickname = nickname;
             PostViewModel postViewModel = new()
             {
                 ViewablePost = post
             };
             return View(_viewPostViewPath, postViewModel);
+        }
+
+        private string GetUserIdByNickname(string nickname)
+        {
+            return SelectFromTableByWhere("UserID", "NickName", nickname)[0];
         }
     }
 }
