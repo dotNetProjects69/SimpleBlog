@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Models.Account;
-using static SimpleBlog.Controllers.Extensions.AccountSql;
-using static SimpleBlog.Models.TempData;
+using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
+using static SimpleBlog.Shared.SessionHandler;
 using static SimpleBlog.Shared.GlobalParams;
+using SimpleBlog.Shared;
 
 namespace SimpleBlog.Controllers
 {
@@ -11,11 +12,13 @@ namespace SimpleBlog.Controllers
     {
         private readonly ILogger<PersonalAccountController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ISessionHandler _sessionHandler;
 
         public PersonalAccountController(ILogger<PersonalAccountController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
+            _sessionHandler = new SessionHandler();
         }
 
         public IActionResult Index()
@@ -72,12 +75,12 @@ namespace SimpleBlog.Controllers
 
         private protected virtual void SetAccountId(string value)
         {
-            HttpContext.Session.SetString(AccountIdSessionKey, value);
+            _sessionHandler.SessionOwnerId = value;
         }
 
         private string GetCurrentAccountId()
         {
-            return HttpContext.Session.GetString(AccountIdSessionKey) ?? "";
+            return _sessionHandler.SessionOwnerId;
         }
         
     }

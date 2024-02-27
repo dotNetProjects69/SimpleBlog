@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.Sqlite;
-using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models;
 using SimpleBlog.Models.Authentication;
-using System.Net;
-using static System.Console;
-using static SimpleBlog.Shared.GlobalParams;
-using static SimpleBlog.Models.TempData;
+using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
+using SimpleBlog.Shared;
 using SimpleBlog.Validators.Base;
 using SimpleBlog.Validators.ValidatorType;
+using System.Net;
+using System.Runtime.CompilerServices;
+using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
+using static SimpleBlog.Controllers.Extensions.Sql.TemplateBuilder;
+using static SimpleBlog.Shared.GlobalParams;
 
+[assembly: InternalsVisibleTo("SimpleBlogTests")]
 namespace SimpleBlog.Controllers
 {
     public class SignUpController : Controller
@@ -18,12 +19,16 @@ namespace SimpleBlog.Controllers
 
         private readonly ILogger<SignUpController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ISessionHandler _sessionHandler;
         private readonly string _signUpPagePath;
 
-        public SignUpController(ILogger<SignUpController> logger, IConfiguration configuration)
+        public SignUpController(ILogger<SignUpController> logger,
+                                IConfiguration configuration,
+                                ISessionHandler? sessionHandler = null)
         {
             _logger = logger;
             _configuration = configuration;
+            _sessionHandler = sessionHandler ?? new SessionHandler();
             _signUpPagePath = "/Views/Authentication/SignUp.cshtml";
 
         }
@@ -34,27 +39,23 @@ namespace SimpleBlog.Controllers
 			return View(_signUpPagePath, model);
 		}
 
-        public IActionResult Register(SignUpModel model)
+        public IActionResult Register(SignUpModel? model)
         {
+            //TODO Test it!
             model ??= new ();
             model.Error = CheckAndSetError(model);
             model.Surname ??= string.Empty;
             if (model.Error.StatusCode != HttpStatusCode.OK)
                 return Index(model);
-            using (SqliteConnection connection = new(GetAccountsDataPath()))
-            {
-                using var command = connection.CreateCommand();
-                {
-                    connection.Open();
-                    SetNewGuid(model);
-                    AddNewAccount(model, command);
-                    AddAccountTable(model, command);
-                }
-            }
+            SetNewGuid(model);
+            AddNewAccount(model);
+            AddAccountTable(model);
+            SetAccountId(model);
+
             return RedirectToAction("Index", "Posts");
         }
 
-        private ErrorModel CheckAndSetError(SignUpModel model)
+        private IErrorModel CheckAndSetError(SignUpModel model)
         {
             ValidationChain<IAccountModelPart> chain = new();
             chain
@@ -69,47 +70,43 @@ namespace SimpleBlog.Controllers
             return chain.Validate(model);
         }
 
-        private void AddAccountTable(SignUpModel model, SqliteCommand command)
+        private void AddAccountTable(SignUpModel model)
         {
-            command.CommandText = $"create table [{model.Id}] (" +
-                                                  $"Id  integer primary key autoincrement, " +
-                                                  $"Title text, Body text, " +
-                                                  $"CreatedAt text, UpdatedAt text)";
-            try
-            {
-                command.ExecuteNonQuery();
-                SetAccountId(model);
-            }
-            catch (Exception ex)
-            {
-                WriteLine(ex.Message);
-            }
+            string template =
+                "(Id  integer primary key autoincrement," +
+                "Title text, Body text," +
+                "CreatedAt text," +
+                "UpdatedAt text)";
+            CreateTable(model.UserId.ToString(),
+                template, 
+                GetAccountsDataPath());
         }
 
-        private void AddNewAccount(SignUpModel model, SqliteCommand command)
+        private void AddNewAccount(SignUpModel model)
         {
-            command.CommandText = $"INSERT INTO AuthData (Name, Surname, DateOfBirth, Email, Password, UserID, NickName) " +
-                                  $"VALUES ('{model.Name.Trim()}', '{model.Surname.Trim()}', " +
-                                          $"'{model.DateOfBirth}', '{model.Email.Trim()}', " +
-                                          $"'{model.Password.Trim()}', '{model.Id}', '{model.Nickname.Trim()}')";
-            try
-            {
-                command.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                WriteLine(ex.Message);
-            }
+            string tableName = "AuthData";
+            string template = 
+                CreateTemplate("Name", "Surname", "DateOfBirth",
+                               "Email", "Password", "UserID", "NickName");
+            string values = 
+                CreateValuesForm(model.Name,
+                                 model.Surname ?? string.Empty,
+                                 model.DateOfBirth.ToString(),
+                                 model.Email,
+                                 model.Password,
+                                 model.UserId.ToString(),
+                                 model.Nickname);
+            AddAccount(tableName, template, values, GetAccountsDataPath());
         }
 
         private static void SetNewGuid(SignUpModel model)
         {
-            model.Id = Guid.NewGuid();
+            model.UserId = Guid.NewGuid();
         }
 
         private protected virtual void SetAccountId(SignUpModel model)
         {
-            HttpContext.Session.SetString(AccountIdSessionKey, model.Id.ToString());
+            _sessionHandler.SessionOwnerId = model.UserId.ToString();
         }
     }
 }

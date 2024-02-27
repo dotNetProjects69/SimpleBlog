@@ -1,6 +1,6 @@
 ﻿namespace SimpleBlog.Models.Interfaces.PostModelParts
 {
-    public interface ITitle : IPostModel
+    public interface ITitle
     {
         string Title { get; set; }
     }

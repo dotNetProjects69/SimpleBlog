@@ -5,4 +5,19 @@
     <h5>Created At: @Model.ViewablePost.CreatedAt </h5>
     <h5>Last Modified At: @Model.ViewablePost.UpdatedAt</h5>
     <p>@Model.ViewablePost.Body</p>
+    <div style="display: flex; align-items: center; margin-top: 15px;">
+        <a asp-controller="Post"
+           asp-action="LikeButtonClicked"
+           asp-route-viewableNickname="@Model.ViewablePost.Nickname"
+           asp-route-postId = "@Model.ViewablePost.Id" 
+           style="text-decoration: none; color: inherit; cursor: pointer">
+            <img src="@Url.Content(Model.ViewablePost.IsLiked 
+                          ? "/Images/Icons/Like/Like Active.png" 
+                          : "/Images/Icons/Like/Like Inactive.png")"
+                 title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+        </a>
+        <span style="font-size: 25px; color: #333; font-weight: lighter;">
+            @Model.ViewablePost.Likes
+        </span>
+    </div>
 </div>

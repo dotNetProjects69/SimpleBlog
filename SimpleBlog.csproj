@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	<UserSecretsId>5f64cf3f-cd8d-4953-acc3-71d5c4f84a35</UserSecretsId>
+	<Configurations>Debug;Release;Sql Migration</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +14,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +39,13 @@
     <None Update="data\Create table.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="data\Debug\Like\In\" />
+    <Folder Include="data\Debug\Like\Out\" />
+    <Folder Include="data\Release\Like\In\" />
+    <Folder Include="data\Release\Like\Out\" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using SimpleBlog.Models;
+using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
 using System.Runtime.CompilerServices;
 
@@ -15,18 +16,18 @@ namespace SimpleBlog.Validators.Base
             return nextValidator;
         }
 
-        public ErrorModel Validate(IAccountModelPart baseModel)
+        public IErrorModel Validate(IAccountModelPart baseModel)
         {
-            ErrorModel result = ValidateLogic(baseModel);
+            IErrorModel result = ValidateLogic(baseModel);
 
             if (result.StatusCodeIsNotOk())
                 return result;
 
             return _nextValidator is not null
                 ? _nextValidator.Validate(baseModel)
-                : new(); // Возвращаем пустую модель ошибок в конце цепочки
+                : new ErrorModel(); // Возвращаем пустую модель ошибок в конце цепочки
         }
 
-        private protected abstract ErrorModel ValidateLogic(IAccountModelPart model);
+        private protected abstract IErrorModel ValidateLogic(IAccountModelPart model);
     }
 }

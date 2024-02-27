@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Models.Authentication;
 using SimpleBlog.Validators.ValidatorType;
-using static SimpleBlog.Controllers.Extensions.AccountSql;
+using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
 using static SimpleBlog.Controllers.SignInControllers.PasswordComparer;
 
 namespace SimpleBlog.Controllers.SignInControllers
@@ -14,7 +14,7 @@ namespace SimpleBlog.Controllers.SignInControllers
         public override IActionResult Index(SignInModel? model = null)
         {
             _model = model ?? new();
-            return View(_signInByEmailPagePath, model);
+            return View(_signInByEmailPagePath, _model);
         }
 
         public IActionResult LogIn(SignInModel? model)
@@ -22,7 +22,7 @@ namespace SimpleBlog.Controllers.SignInControllers
             _model = model ?? new();
             ValidateEmail();
             if (_model.Error.StatusCodeIsOk()) 
-                _model.Error = CompareInputPasswordByEmail(model);
+                _model.Error = CompareInputPasswordByEmail(_model);
             if (_model.Error.StatusCodeIsNotOk())
                 return Index(_model);
             SetNicknameByEmail();
@@ -42,7 +42,12 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         private void SetNicknameByEmail()
         {
-            _model.Nickname = SelectFromTableByWhere("NickName", "Email", _model.Email)[0];
+            _model.Nickname = 
+                SelectFromTableByWhere(
+                    "NickName", 
+                    "Email", 
+                    _model.Email)
+                    .ElementAtOrDefault(0) ?? string.Empty;
         }
     }
 }

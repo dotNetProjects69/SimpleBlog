@@ -1,6 +1,7 @@
 ﻿using SimpleBlog.Models;
 using System.Runtime.CompilerServices;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
+using SimpleBlog.Models.Interfaces;
 
 [assembly: InternalsVisibleTo("SimpleBlogTests")]
 namespace SimpleBlog.Validators.Base
@@ -19,14 +20,11 @@ namespace SimpleBlog.Validators.Base
             return _firstValidator;
         }
 
-        public ErrorModel Validate(IAccountModelPart model)
+        public IErrorModel Validate(IAccountModelPart model)
         {
-            if (_firstValidator != null)
-            {
-                return _firstValidator.Validate(model);
-            }
-
-            return new(); // Если цепочка пуста, возвращаем пустую модель ошибок
+            return _firstValidator != null
+                ? _firstValidator.Validate(model)
+                : new ErrorModel(); // Если цепочка пуста, возвращаем пустую модель ошибок
         }
     }
 }

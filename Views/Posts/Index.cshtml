@@ -23,11 +23,18 @@
             @foreach (var p in Model.PostList)
             {
                 <div class="post">
-                    <a style="color: black; font-size: 40px" asp-area="" asp-controller="Posts" asp-action="ViewPost" asp-route-id="@p.Id">@p.Title</a>
+                    <a style="color: black; font-size: 40px"
+                    asp-controller="Posts" 
+                    asp-action="ViewPost" 
+                    asp-route-id="@p.Id">@p.Title
+                    </a>
                     <p style="font-size: 30px">@p.Body</p>
                     <p class="text-muted">@p.CreatedAt.ToString("dd MMMM yyyy HH:mm")</p>
                     <div style="display: flex; align-items: center; margin-top: 15px;">
-                        <img src="/Images/Icons/Like/Like Active.png" title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+                        <div style="text-decoration: none; color: inherit; cursor: pointer">
+                            <img src="/Images/Icons/Like/Like Active.png"
+                                 title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+                        </div>
                         <span style="font-size: 25px; color: #333; font-weight: lighter;">
                             @p.Likes
                         </span>

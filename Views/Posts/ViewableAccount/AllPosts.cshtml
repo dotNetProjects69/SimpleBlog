@@ -1,4 +1,4 @@
-﻿@model PostViewModel;
+﻿    @model PostViewModel;
 
 
 <div class="row justify-content-center">
@@ -7,19 +7,28 @@
             @foreach (var p in Model.PostList)
             {
                 <div class="post">
-                    <p style="color: black; font-size: 40px">@p.Title</p>
+                    <a style="color: black; font-size: 40px"
+                       asp-controller = "AllPosts"
+                       asp-action = "ViewPost"
+                       asp-route-id = "@p.Id"
+                       asp-route-nickname = "@p.Nickname">@p.Title</a>
                     <p style="font-size: 30px">@p.Body</p>
                     <p class="text-muted">@p.CreatedAt.ToString("dd MMMM yyyy HH:mm")</p>
                     <div style="display: flex; align-items: center; margin-top: 15px;">
-                        <img src="/Images/Icons/Like/Like Active.png" title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+                        <a asp-controller = "Post"
+                           asp-action = "LikeButtonClicked"
+                           asp-route-viewableNickname = "@p.Nickname"
+                           asp-route-postId = "@p.Id" 
+                           style="text-decoration: none; color: inherit; cursor: pointer">
+                            <img src="@Url.Content(p.IsLiked 
+                                          ? "/Images/Icons/Like/Like Active.png" 
+                                          : "/Images/Icons/Like/Like Inactive.png")"
+                                 title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+                        </a>
                         <span style="font-size: 25px; color: #333; font-weight: lighter;">
                             @p.Likes
                         </span>
                     </div>
-                    <a asp-controller="ViewablePosts"
-                       asp-action="ViewPost"
-                       asp-route-id="@p.Id"
-                       asp-route-nickname="@p.Nickname">Ещё...</a>
                 </div>
             }
         </div>

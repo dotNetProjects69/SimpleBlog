@@ -7,8 +7,7 @@ using static SimpleBlog.Shared.GlobalParams;
 using static System.Console;
 
 [assembly: InternalsVisibleTo("SimpleBlogTests")]
-
-namespace SimpleBlog.Controllers.Extensions
+namespace SimpleBlog.Controllers.Extensions.Sql
 {
     public class AccountSql
     {
@@ -28,17 +27,73 @@ namespace SimpleBlog.Controllers.Extensions
                 WriteLine(ex.Message);
             }
         }
-        
+
+        internal static string GetAccountIdByNickname(string nickname)
+        {
+            return SelectFromTableByWhere(
+                    "UserID", 
+                    "NickName", 
+                    nickname)
+                .ElementAtOrDefault(0) ?? string.Empty;
+        }
+
+        internal static string GetAccountNicknameById(string id)
+        {
+            return SelectFromTableByWhere(
+                    "NickName",
+                    "UserID",
+                    id)
+                .ElementAtOrDefault(0) ?? string.Empty;
+        }
+
+        internal static void CreateTable(string name, string postfix, string dbFilePath)
+        {
+            using SqliteConnection connection = new(dbFilePath);
+            using var command = connection.CreateCommand();
+            {
+                connection.Open();
+
+                command.CommandText = $"create table [{name}] {postfix}";
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    WriteLine(ex.Message);
+                }
+            }
+        }
+
+        internal static void AddAccount(string tableName, string template, string values, string dbFilePath)
+        {
+            using SqliteConnection connection = new(dbFilePath);
+            using var command = connection.CreateCommand();
+            {
+                connection.Open();
+
+                command.CommandText = $"INSERT INTO {tableName} ({template}) VALUES ({values})";
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    WriteLine(ex.Message);
+                }
+            }
+        }
+
         internal static bool AccountExist(string paramName, string paramValue)
         {
             EditAccountModel model = InstantiateAccountModelOrEmpty<EditAccountModel>(paramName, paramValue);
-            return model.Id != new Guid();
+            return model.UserId != new Guid();
         }
 
         internal static T InstantiateAccountModelOrEmpty<T>(string parameter, string value) where T : class, IAccount, new()
         {
             T model = new();
-            IReadOnlyList<string> data = SelectFromTableByWhere("*", parameter, value);
+            IReadOnlyCollection<string> data = SelectFromTableByWhere("*", parameter, value);
             if (!data.Any()) return model;
 
             // use Visitor pattern
@@ -49,24 +104,25 @@ namespace SimpleBlog.Controllers.Extensions
             return model;
         }
 
-        internal static IReadOnlyList<string> SelectFromTableByWhere(string selectable, string filterParam,
+        internal static IReadOnlyCollection<string> SelectFromTableByWhere(string selectable, string filterParam,
                                                                      string filterName, string tableName = "AuthData")
         {
             string filter = $"WHERE {filterParam} = '{filterName}'";
-            if(SelectFromTable(selectable, filter, tableName).Any()) 
+            if (SelectFromTable(selectable, filter, tableName).Any())
                 return SelectFromTable(selectable, filter, tableName).First();
+
             return new List<string>();
         }
 
-        internal static IReadOnlyList<IReadOnlyList<string>> SelectAllFromTable(string filter = "", string tableName = "AuthData")
+        internal static IReadOnlyCollection<IReadOnlyCollection<string>> SelectAllFromTable(string filter = "", string tableName = "AuthData")
         {
             return SelectFromTable("*", filter, tableName);
         }
 
-        internal static IReadOnlyList<IReadOnlyList<string>> SelectFromTable(string selectable, string filter = "",
-                                                                             string tableName = "AuthData")
+        internal static IReadOnlyCollection<IReadOnlyCollection<string>> 
+            SelectFromTable(string selectable, string filter = "", string tableName = "AuthData")
         {
-            List<List<string>> accounts = [];
+            List<IReadOnlyCollection<string>> accounts = [];
             string sqlCommand = $"SELECT {selectable} FROM {tableName} {filter}";
             using SqliteConnection connection = new(GetAccountsDataPath());
             using SqliteCommand command = new(sqlCommand, connection);
@@ -77,9 +133,9 @@ namespace SimpleBlog.Controllers.Extensions
                 while (reader.Read())
                 {
                     List<string> account = new();
-                    for (var i = 0; i < reader.FieldCount; i++) 
+                    for (var i = 0; i < reader.FieldCount; i++)
                         account.Add(reader.GetString(i));
-                    accounts.Add(account);
+                    accounts.Add(account.AsReadOnly());
                 }
                 return accounts;
             }
@@ -91,9 +147,9 @@ namespace SimpleBlog.Controllers.Extensions
             return accounts;
         }
 
-        private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccount 
+        private static T SetData<T>(T model, IEnumerable<string> data) where T : IAccount
         {
-            model.Id = new(data.ElementAt(6));
+            model.UserId = new(data.ElementAt(6));
             model.Name = data.ElementAt(1);
             model.Surname = data.ElementAt(2);
             _ = DateOnly.TryParse(data.ElementAt(3),

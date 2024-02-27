@@ -1,4 +1,6 @@
-﻿@inject IHttpContextAccessor HttpContextAccessor
+﻿@using SimpleBlog.Shared;
+
+@inject IHttpContextAccessor HttpContextAccessor
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,11 +41,9 @@
                            </a>
                         </li>
                         @{
-                            string accountIdSessionKey = SimpleBlog.Models.TempData.AccountIdSessionKey;
-                            ISession? session = HttpContextAccessor.HttpContext?.Session;
-
                             // Получение значения переменной сессии
-                            string accountId = session?.GetString(accountIdSessionKey) ?? "";
+                            ISessionHandler sessionHandler = new SessionHandler();
+                            string accountId = sessionHandler.SessionOwnerId;
                         }
                         @if (accountId != string.Empty)
                         {

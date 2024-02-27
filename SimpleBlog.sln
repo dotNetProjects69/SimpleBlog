@@ -11,16 +11,21 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		SqlMigration|Any CPU = SqlMigration|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D9C6C4FC-CAEC-4B26-B0D0-167419F562A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9C6C4FC-CAEC-4B26-B0D0-167419F562A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9C6C4FC-CAEC-4B26-B0D0-167419F562A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9C6C4FC-CAEC-4B26-B0D0-167419F562A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9C6C4FC-CAEC-4B26-B0D0-167419F562A5}.SqlMigration|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C6C4FC-CAEC-4B26-B0D0-167419F562A5}.SqlMigration|Any CPU.Build.0 = Debug|Any CPU
 		{E7105A53-9DC1-46AA-8142-243BEA8828DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7105A53-9DC1-46AA-8142-243BEA8828DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7105A53-9DC1-46AA-8142-243BEA8828DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7105A53-9DC1-46AA-8142-243BEA8828DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7105A53-9DC1-46AA-8142-243BEA8828DE}.SqlMigration|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7105A53-9DC1-46AA-8142-243BEA8828DE}.SqlMigration|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
 ﻿using SimpleBlog.Models;
+using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
 using SimpleBlog.Validators.Base;
 using System.Net;
@@ -10,13 +11,13 @@ namespace SimpleBlog.Validators.ValidatorType
 {
     public class PasswordConfirmIsCorrectly : Validator<IAccountModelPart>
     {
-        private protected override ErrorModel ValidateLogic(IAccountModelPart baseModel)
+        private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
             var model = TryTransformTo<IConfirmedPassword>(baseModel);
             bool result = model.Password != model.ConfirmedPassword;
             return result
                 ? new(HttpStatusCode.BadRequest, "Fields Password and Confirm Password are not same")
-                : new();
+                : new ErrorModel();
         }
     }
 }

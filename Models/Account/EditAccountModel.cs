@@ -1,4 +1,5 @@
-﻿using SimpleBlog.Models.Interfaces.AccountModelParts;
+﻿using SimpleBlog.Models.Interfaces;
+using SimpleBlog.Models.Interfaces.AccountModelParts;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SimpleBlogTest")]
@@ -13,12 +14,12 @@ namespace SimpleBlog.Models.Account
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Nickname { get; set; } = string.Empty;
-        public ErrorModel Error { get; set; } = new();
-        public Guid Id { get; set; }
+        public IErrorModel Error { get; set; } = new ErrorModel();
+        public Guid UserId { get; set; }
 
         public void Debug()
         {
-            Console.WriteLine($"Id - {Id}\n" +
+            Console.WriteLine($"Id - {UserId}\n" +
                               $"Name - {Name}\n" +
                               $"Surname - {Surname}\n" +
                               $"Date of birth - {DateOfBirth}\n" +

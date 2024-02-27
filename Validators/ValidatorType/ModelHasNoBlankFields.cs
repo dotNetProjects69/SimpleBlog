@@ -1,15 +1,14 @@
-﻿using SimpleBlog.Models;
+﻿using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
 using SimpleBlog.Validators.Base;
 using System.Runtime.CompilerServices;
 using static SimpleBlog.Validators.Base.TypeTransformer;
 
-[assembly: InternalsVisibleTo("SimpleBlogTests")]
 namespace SimpleBlog.Validators.ValidatorType
 {
     public class ModelHasNoBlankFields : Validator<IAccountModelPart>
     {
-        private protected override ErrorModel ValidateLogic(IAccountModelPart baseModel)
+        private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
             ValidationChain<IAccountModelPart> chain = new();
             chain

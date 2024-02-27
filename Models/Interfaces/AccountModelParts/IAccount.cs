@@ -2,7 +2,7 @@
 {
     public interface IAccount : IName, ISurname, INickname
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public string Email { get; set; }
     }

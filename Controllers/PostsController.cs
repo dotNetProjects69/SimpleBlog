@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
-using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models.ViewModels;
-using static SimpleBlog.Models.TempData;
-using static SimpleBlog.Shared.GlobalParams;
-using static SimpleBlog.Controllers.Extensions.PostSql;
-using static SimpleBlog.Controllers.Extensions.AccountSql;
+using SimpleBlog.Controllers.Extensions.Sql;
+using SimpleBlog.Models.Interfaces.PostModelParts;
 using SimpleBlog.Models.Post;
+using SimpleBlog.Models.ViewModels;
+using SimpleBlog.Shared;
+using static SimpleBlog.Controllers.Extensions.Sql.PostSql;
+using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers
 {
@@ -14,13 +14,17 @@ namespace SimpleBlog.Controllers
     {
         private readonly ILogger<PostsController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ISessionHandler _sessionHandler;
         private readonly string _format;
         private readonly string _accountsData;
 
-        public PostsController(ILogger<PostsController> logger, IConfiguration configuration)
+        public PostsController(ILogger<PostsController> logger, 
+                               IConfiguration configuration,
+                               ISessionHandler sessionHandler)
         {
             _logger = logger;
             _configuration = configuration;
+            _sessionHandler = sessionHandler;
             _format = _configuration["DateTimeFormat"] ?? "";
             _accountsData = GetAccountsDataPath();
         }
@@ -40,7 +44,7 @@ namespace SimpleBlog.Controllers
 
         public IActionResult ViewPost(int id)
         {
-            PostModel post = GetPostById(id);
+            IPostModel post = GetPostById(id);
             PostViewModel postViewModel = new()
             {
                 ViewablePost = post
@@ -50,7 +54,7 @@ namespace SimpleBlog.Controllers
 
         public IActionResult EditPost(int id)
         {
-            PostModel post = GetPostById(id);
+            IPostModel post = GetPostById(id);
             PostViewModel postViewModel = new()
             {
                 ViewablePost = post
@@ -58,9 +62,9 @@ namespace SimpleBlog.Controllers
             return View(postViewModel);
         }
 
-        private PostModel GetPostById(int id)
+        private IPostModel GetPostById(int id)
         {
-            return PostSql.GetPostById("*", GetCurrentAccountId(), id).First();
+            return PostSql.GetPostById("*", GetCurrentAccountId(), id.ToString());
         }
 
         private PostViewModel GetAllPosts()
@@ -141,7 +145,7 @@ namespace SimpleBlog.Controllers
 
         private string GetCurrentAccountId()
         {
-            return HttpContext.Session.GetString(AccountIdSessionKey) ?? "";
+            return _sessionHandler.SessionOwnerId;
         }
     }
 

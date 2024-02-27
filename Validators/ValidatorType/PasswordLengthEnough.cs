@@ -1,4 +1,5 @@
 ﻿using SimpleBlog.Models;
+using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
 using SimpleBlog.Validators.Base;
 using System.Net;
@@ -22,12 +23,13 @@ namespace SimpleBlog.Validators.ValidatorType
             _length = length;
         }
 
-        private protected override ErrorModel ValidateLogic(IAccountModelPart baseModel)
+        private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
             var model = TryTransformTo<IPassword>(baseModel);
             return model.Password.Length >= _length
-                ? new()
-                : new(HttpStatusCode.BadRequest, $"The password must be at least {_length} characters long");
+                ? new ErrorModel()
+                : new(HttpStatusCode.BadRequest, 
+                      $"The password must be at least {_length} characters long");
         }
     }
 }

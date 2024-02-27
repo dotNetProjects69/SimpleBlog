@@ -1,12 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleBlog.Models;
-using static SimpleBlog.Controllers.Extensions.AccountSql;
-using static SimpleBlog.Models.TempData;
+using SimpleBlog.Shared;
+using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
+using static SimpleBlog.Shared.SessionHandler;
 
 namespace SimpleBlog.Controllers
 {
     public class SearchController : Controller
     {
+        private readonly ISessionHandler _sessionHandler;
+
+        public SearchController(ISessionHandler? sessionHandler = null)
+        {
+            _sessionHandler = sessionHandler ?? new SessionHandler();
+        }
 
         public IActionResult Index(Search? search = null)
         {
@@ -17,21 +24,25 @@ namespace SimpleBlog.Controllers
         public IActionResult Search(Search search)
         {
             search.Result.Clear();
-            var result = SelectAllFromTable($"WHERE NickName LIKE '%{search.Nickname}%'");
+            var result = 
+                SelectAllFromTable($"WHERE NickName LIKE '%{search.Nickname}%'");
             foreach (var account in result)
-                if (AccountIdIsNotCurrent(account[7]))
-                    search.Result.Add(account[7]);
+            {
+                string currentAccount = account.ElementAtOrDefault(7) ?? string.Empty;
+                if (AccountIdIsNotCurrent(currentAccount))
+                    search.Result.Add(currentAccount);
+            }
             return RedirectToAction("Index", search);
         }
 
         public IActionResult ShowAllViewableAccountPosts(string nickname)
         {
-            return RedirectToAction("Index", "ViewablePosts", new { nickname });
+            return RedirectToAction("Index", "AllPosts", new { nickname });
         }
 
         private bool AccountIdIsNotCurrent(string accountId)
         {
-            return accountId != HttpContext.Session.GetString(AccountIdSessionKey);
+            return accountId != _sessionHandler.SessionOwnerId;
         }
     }
 }

@@ -1,9 +1,13 @@
+using System.Text;
+using SimpleBlog.Shared;
+
 namespace SimpleBlog
 {
     public class Program
     {
         public static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -12,6 +16,8 @@ namespace SimpleBlog
             builder.Services.AddDistributedMemoryCache();
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddScoped<ISessionHandler, SessionHandler>();
 
             builder.Services.AddSession(options =>
             {

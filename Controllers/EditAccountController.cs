@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Controllers.Extensions;
-using SimpleBlog.Models;
 using SimpleBlog.Models.Account;
 using System.Net;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
 using SimpleBlog.Validators.Base;
 using SimpleBlog.Validators.ValidatorType;
-using static SimpleBlog.Models.TempData;
+using static SimpleBlog.Shared.SessionHandler;
 using static SimpleBlog.Shared.GlobalParams;
 using SimpleBlog.Models.Authentication;
+using SimpleBlog.Shared;
+using SimpleBlog.Models.Interfaces;
 
 namespace SimpleBlog.Controllers
 {
@@ -18,12 +19,14 @@ namespace SimpleBlog.Controllers
         private readonly ILogger<EditAccountController> _logger;
         private readonly IConfiguration _configuration;
         private readonly string _editAccountPagePath;
+        private readonly ISessionHandler _sessionHandler;
 
         public EditAccountController(ILogger<EditAccountController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
             _editAccountPagePath = "/Views/PersonalAccount/EditAccount.cshtml";
+            _sessionHandler = new SessionHandler();
         }
 
         public IActionResult Index(EditAccountModel model)
@@ -54,7 +57,7 @@ namespace SimpleBlog.Controllers
 
         
 
-        private ErrorModel CheckAndSetError(EditAccountModel model)
+        private IErrorModel CheckAndSetError(EditAccountModel model)
         {
             ValidationChain<IAccountModelPart> chain = new();
             chain
@@ -79,7 +82,7 @@ namespace SimpleBlog.Controllers
                                           $"Email = '{model.Email.Trim()}', " +
                                           $"Password = '{model.Password.Trim()}', " +
                                           $"NickName = '{model.Nickname.Trim()}' " +
-                                          $"WHERE UserID = '{model.Id}'";
+                                          $"WHERE UserID = '{model.UserId}'";
                     try
                     {
                         command.ExecuteNonQuery();
@@ -94,12 +97,7 @@ namespace SimpleBlog.Controllers
 
         private protected virtual void SetAccountId(EditAccountModel model)
         {
-            HttpContext.Session.SetString(AccountIdSessionKey, model.Id.ToString());
-        }
-
-        private string GetCurrentAccountId()
-        {
-            return HttpContext.Session.GetString(AccountIdSessionKey) ?? "";
+            _sessionHandler.SessionOwnerId = model.UserId.ToString();
         }
     }
 }
