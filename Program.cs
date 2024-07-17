@@ -1,4 +1,6 @@
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using SimpleBlog.Data.Context;
 using SimpleBlog.Shared;
 
 namespace SimpleBlog
@@ -8,7 +10,7 @@ namespace SimpleBlog
         public static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -26,7 +28,12 @@ namespace SimpleBlog
                 options.Cookie.IsEssential = true;
             });
 
-            var app = builder.Build();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDb"));
+            });
+
+            WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

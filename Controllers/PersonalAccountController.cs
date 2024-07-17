@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using SimpleBlog.Models.Account;
-using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
-using static SimpleBlog.Shared.SessionHandler;
-using static SimpleBlog.Shared.GlobalParams;
 using SimpleBlog.Shared;
+using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
+using static SimpleBlog.Shared.GlobalParams;
 
 namespace SimpleBlog.Controllers
 {

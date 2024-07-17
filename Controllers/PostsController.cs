@@ -18,9 +18,9 @@ namespace SimpleBlog.Controllers
         private readonly string _format;
         private readonly string _accountsData;
 
-        public PostsController(ILogger<PostsController> logger, 
-                               IConfiguration configuration,
-                               ISessionHandler sessionHandler)
+        public PostsController(ILogger<PostsController> logger,
+            IConfiguration configuration,
+            ISessionHandler sessionHandler)
         {
             _logger = logger;
             _configuration = configuration;
@@ -86,8 +86,8 @@ namespace SimpleBlog.Controllers
                 using SqliteCommand command = connection.CreateCommand();
                 connection.Open();
                 command.CommandText = $"INSERT INTO [{GetCurrentAccountId()}] " +
-                    $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
-                    $"('{viewablePost.Title}', '{viewablePost.Body}', '{viewablePost.CreatedAt.ToString(_format)}', '{viewablePost.UpdatedAt.ToString(_format)}')";
+                                      $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
+                                      $"('{viewablePost.Title}', '{viewablePost.Body}', '{viewablePost.CreatedAt.ToString(_format)}', '{viewablePost.UpdatedAt.ToString(_format)}')";
                 try
                 {
                     command.ExecuteNonQuery();
@@ -132,7 +132,7 @@ namespace SimpleBlog.Controllers
         [HttpPost]
         public JsonResult Delete(int id)
         {
-            using (SqliteConnection connection = new (_accountsData))
+            using (SqliteConnection connection = new(_accountsData))
             {
                 using var command = connection.CreateCommand();
                 connection.Open();
@@ -148,5 +148,4 @@ namespace SimpleBlog.Controllers
             return _sessionHandler.SessionOwnerId;
         }
     }
-
 }

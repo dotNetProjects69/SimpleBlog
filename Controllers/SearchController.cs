@@ -2,7 +2,6 @@
 using SimpleBlog.Models;
 using SimpleBlog.Shared;
 using static SimpleBlog.Controllers.Extensions.Sql.AccountSql;
-using static SimpleBlog.Shared.SessionHandler;
 
 namespace SimpleBlog.Controllers
 {
@@ -26,7 +25,7 @@ namespace SimpleBlog.Controllers
             search.Result.Clear();
             var result = 
                 SelectAllFromTable($"WHERE NickName LIKE '%{search.Nickname}%'");
-            foreach (var account in result)
+            foreach (IReadOnlyCollection<string> account in result)
             {
                 string currentAccount = account.ElementAtOrDefault(7) ?? string.Empty;
                 if (AccountIdIsNotCurrent(currentAccount))

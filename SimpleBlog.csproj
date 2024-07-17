@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <None Include="wwwroot\Images\Icons\Home.png" />
+    <None Remove="SimpleBlog.Data\**" />
+    <None Remove="SimpleBlog.Common\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +48,34 @@
     <Folder Include="data\Debug\Like\Out\" />
     <Folder Include="data\Release\Like\In\" />
     <Folder Include="data\Release\Like\Out\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="SimpleBlog.Data\**" />
+    <Compile Remove="SimpleBlog.Common\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="SimpleBlog.Data\**" />
+    <EmbeddedResource Remove="SimpleBlog.Common\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="SimpleBlog.Data\**" />
+    <Content Remove="SimpleBlog.Common\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="SimpleBlog.Data\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Data\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Data\obj\SimpleBlog.Data.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Common\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Common\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Common\obj\SimpleBlog.Common.csproj.nuget.dgspec.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="SimpleBlog.Data\SimpleBlog.Data.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
-using SimpleBlog.Controllers.Extensions;
 using SimpleBlog.Models.Account;
-using System.Net;
+using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
+using SimpleBlog.Shared;
 using SimpleBlog.Validators.Base;
 using SimpleBlog.Validators.ValidatorType;
-using static SimpleBlog.Shared.SessionHandler;
+using System.Net;
 using static SimpleBlog.Shared.GlobalParams;
-using SimpleBlog.Models.Authentication;
-using SimpleBlog.Shared;
-using SimpleBlog.Models.Interfaces;
 
 namespace SimpleBlog.Controllers
 {
