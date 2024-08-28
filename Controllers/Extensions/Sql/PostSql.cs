@@ -43,7 +43,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
             List<PostModel> postList = new();
 
             using SqliteConnection connection = new(GetAccountsDataPath());
-            using var command = connection.CreateCommand();
+            using SqliteCommand? command = connection.CreateCommand();
             connection.Open();
             command.CommandText = $"SELECT {gettingParam} FROM [{accountTableName}] {commandPostfix}";
 
@@ -58,13 +58,13 @@ namespace SimpleBlog.Controllers.Extensions.Sql
                         _format,
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.None,
-                        out var parsedCreatedAt);
+                        out DateTime parsedCreatedAt);
 
                     DateTime.TryParseExact(reader.GetString(4),
                         _format,
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.None,
-                        out var parsedUpdatedAt);
+                        out DateTime parsedUpdatedAt);
                     postList.Add(
                         new()
                         {

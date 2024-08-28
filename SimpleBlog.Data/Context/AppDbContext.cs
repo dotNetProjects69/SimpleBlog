@@ -10,11 +10,6 @@ public class AppDbContext : DbContext
         
     }
     
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseLazyLoadingProxies();
-    }
-    
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Like> Likes { get; set; }
     public DbSet<Post> Posts { get; set; }

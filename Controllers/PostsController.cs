@@ -87,7 +87,10 @@ namespace SimpleBlog.Controllers
                 connection.Open();
                 command.CommandText = $"INSERT INTO [{GetCurrentAccountId()}] " +
                                       $"(Title, Body, CreatedAt, UpdatedAt) VALUES " +
-                                      $"('{viewablePost.Title}', '{viewablePost.Body}', '{viewablePost.CreatedAt.ToString(_format)}', '{viewablePost.UpdatedAt.ToString(_format)}')";
+                                      $"('{viewablePost.Title}', " +
+                                      $"'{viewablePost.Body}', " +
+                                      $"'{viewablePost.CreatedAt.ToString(_format)}', " +
+                                      $"'{viewablePost.UpdatedAt.ToString(_format)}')";
                 try
                 {
                     command.ExecuteNonQuery();
@@ -107,7 +110,7 @@ namespace SimpleBlog.Controllers
 
             using (SqliteConnection connection = new(_accountsData))
             {
-                using (var command = connection.CreateCommand())
+                using (SqliteCommand? command = connection.CreateCommand())
                 {
                     connection.Open();
                     command.CommandText = $"UPDATE [{GetCurrentAccountId()}] SET Title = " +
@@ -134,13 +137,13 @@ namespace SimpleBlog.Controllers
         {
             using (SqliteConnection connection = new(_accountsData))
             {
-                using var command = connection.CreateCommand();
+                using SqliteCommand? command = connection.CreateCommand();
                 connection.Open();
                 command.CommandText = $"DELETE from [{GetCurrentAccountId()}] WHERE Id = '{id}'";
                 command.ExecuteNonQuery();
             }
 
-            return Json(new object { });
+            return Json(new());
         }
 
         private string GetCurrentAccountId()

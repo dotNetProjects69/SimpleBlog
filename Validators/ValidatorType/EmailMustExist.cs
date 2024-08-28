@@ -12,11 +12,11 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<IEmail>(baseModel);
+            IEmail? model = TryTransformTo<IEmail>(baseModel);
             bool result = !AccountExist("Email", model.Email);
             return result
                 ? new(HttpStatusCode.NotFound, "An account with such an email does not exist")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace SimpleBlog.Validators.Base
         {
             return _firstValidator != null
                 ? _firstValidator.Validate(model)
-                : new ErrorModel(); // Если цепочка пуста, возвращаем пустую модель ошибок
+                : ErrorModel.Success; // Если цепочка пуста, возвращаем пустую модель ошибок
         }
     }
 }

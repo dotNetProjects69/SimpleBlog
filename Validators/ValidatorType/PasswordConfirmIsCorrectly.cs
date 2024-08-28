@@ -13,11 +13,11 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<IConfirmedPassword>(baseModel);
+            IConfirmedPassword? model = TryTransformTo<IConfirmedPassword>(baseModel);
             bool result = model.Password != model.ConfirmedPassword;
             return result
                 ? new(HttpStatusCode.BadRequest, "Fields Password and Confirm Password are not same")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

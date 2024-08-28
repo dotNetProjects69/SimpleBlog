@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleBlog.Data.Context;
 using SimpleBlog.Data.Entities;
-using SafeResult;
 using SimpleBlog.Data.Repositories.Abstract;
 
 namespace SimpleBlog.Data.Repositories;
 
-public class AccountRepository : IRepository<Account> 
+public class AccountRepository : IAccountRepository
 {
     private readonly AppDbContext _context;
 
@@ -15,24 +14,44 @@ public class AccountRepository : IRepository<Account>
         _context = context;
     }
 
-    public async Task<List<SafeResult<Account>>> GetAll()
+    public async Task<List<Account>> GetAll()
     {
-        return await _context.Accounts.ToSafeResultListAsync();
+        return await _context.Accounts.AsNoTracking().ToListAsync();
     }
 
-    public async Task<SafeResult<Account>> GetById(int id)
+    public async Task<Account?> GetById(int id)
     {
         Account? account = await _context
             .Accounts
+            .AsNoTracking()
             .FirstOrDefaultAsync(a => a.AccountId == id);
-        return account is null 
-            ? SafeResult<Account>.GetErrorInstance("Not Found") 
-            : SafeResult<Account>.GetResultInstance(account);
+        
+        return account;
+    }
+
+    public async Task<List<Account>> GetByNickname(string nickname)
+    {
+        List<Account> account = await _context
+            .Accounts
+            .Where(a => a.Nickname == nickname)
+            .ToListAsync();
+
+        return account;
+    }
+
+    public async Task<List<Account>> GetByEmail(string email)
+    {
+        List<Account> accounts = await _context
+            .Accounts
+            .Where(a => a.Email == email)
+            .ToListAsync();
+
+        return accounts;
     }
 
     public async Task Add(Account entity)
     {
-        await _context.Accounts.AddAsync(entity);
+        _context.Accounts.Add(entity);
         await _context.SaveChangesAsync();
     }
 

@@ -25,7 +25,7 @@
     <div class="row justify-content-center">
         <div class="ccol-xl-10 col-lg-10 col-md-10 col-sm-10">
             <div class="posts-container">
-                @foreach (var accountNickname in Model.Result)
+                @foreach (string? accountNickname in Model.Result)
                 {
                     <div class="post">
                         @* <h2><a asp-area="" asp-controller="ViewablePosts" asp-action="ViewViewablePost" asp-route-id="@accountNicknames.Id">@accountNicknames.Title</a></h2> *@

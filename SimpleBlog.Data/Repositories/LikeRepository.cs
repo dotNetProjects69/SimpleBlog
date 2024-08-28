@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SafeResult;
 using SimpleBlog.Data.Context;
 using SimpleBlog.Data.Entities;
 using SimpleBlog.Data.Repositories.Abstract;
 
 namespace SimpleBlog.Data.Repositories;
 
-public class LikeRepository : IRepository<Like>
+public class LikeRepository : ILikeRepository
 {
     private readonly AppDbContext _context;
 
@@ -15,20 +14,19 @@ public class LikeRepository : IRepository<Like>
         _context = context;
     }
 
-    public async Task<List<SafeResult<Like>>> GetAll()
+    public async Task<List<Like>> GetAll()
     {
-        return await _context.Likes.ToSafeResultListAsync();
+        return await _context.Likes.AsNoTracking().ToListAsync();
     }
 
-    public async Task<SafeResult<Like>> GetById(int id)
+    public async Task<Like?> GetById(int id)
     {
         Like? like = await _context
             .Likes
+            .AsNoTracking()
             .FirstOrDefaultAsync(l => l.LikeId == id);
-        
-        return like is null 
-            ? SafeResult<Like>.GetErrorInstance("Not Found") 
-            : SafeResult<Like>.GetResultInstance(like);
+
+        return like;
     }
 
     public async Task Add(Like entity)
@@ -47,5 +45,12 @@ public class LikeRepository : IRepository<Like>
     {
         _context.Remove(entity);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Like>> GetAllLikesByAccountId(int id)
+    {
+        return await _context.Likes
+            .AsNoTracking()
+            .Where(l => l.AccountSenderId == id).ToListAsync();
     }
 }

@@ -11,11 +11,11 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<INickname>(baseModel);
+            INickname? model = TryTransformTo<INickname>(baseModel);
             bool result = string.IsNullOrWhiteSpace(model.Nickname);
             return result
                 ? new(HttpStatusCode.BadRequest, "Nickname field is blank")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

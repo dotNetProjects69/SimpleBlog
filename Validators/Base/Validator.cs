@@ -25,7 +25,7 @@ namespace SimpleBlog.Validators.Base
 
             return _nextValidator is not null
                 ? _nextValidator.Validate(baseModel)
-                : new ErrorModel(); // Возвращаем пустую модель ошибок в конце цепочки
+                : ErrorModel.Success; // Возвращаем пустую модель ошибок в конце цепочки
         }
 
         private protected abstract IErrorModel ValidateLogic(IAccountModelPart model);

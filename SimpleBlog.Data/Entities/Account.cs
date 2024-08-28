@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 
 namespace SimpleBlog.Data.Entities;
 
@@ -14,6 +13,8 @@ public class Account
     public string Email { get; set; } = string.Empty;
     [Required]
     public string Nickname { get; set; } = string.Empty;
+    [Required]
+    public string Password { get; set; } = string.Empty;
     
-    public virtual ICollection<Post>? Posts { get; set; }
+    public ICollection<Post>? Posts { get; set; }
 }

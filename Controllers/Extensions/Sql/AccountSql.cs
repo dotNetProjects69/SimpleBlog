@@ -49,7 +49,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
         internal static void CreateTable(string name, string postfix, string dbFilePath)
         {
             using SqliteConnection connection = new(dbFilePath);
-            using var command = connection.CreateCommand();
+            using SqliteCommand? command = connection.CreateCommand();
             {
                 connection.Open();
 
@@ -68,7 +68,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
         internal static void AddAccount(string tableName, string template, string values, string dbFilePath)
         {
             using SqliteConnection connection = new(dbFilePath);
-            using var command = connection.CreateCommand();
+            using SqliteCommand? command = connection.CreateCommand();
             {
                 connection.Open();
 
@@ -133,7 +133,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
                 while (reader.Read())
                 {
                     List<string> account = new();
-                    for (var i = 0; i < reader.FieldCount; i++)
+                    for (int i = 0; i < reader.FieldCount; i++)
                         account.Add(reader.GetString(i));
                     accounts.Add(account.AsReadOnly());
                 }

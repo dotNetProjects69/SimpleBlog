@@ -22,7 +22,7 @@ namespace SimpleBlog.Controllers.SignInControllers
 
         private static IErrorModel CheckInputPassword(SignInModel model, string filterParam, string filterName)
         {
-            IErrorModel errorModel = new ErrorModel();
+            IErrorModel errorModel = ErrorModel.Success;
             IReadOnlyCollection<string> resultList = 
                 SelectFromTableByWhere("Password", filterParam, filterName);
             string result = resultList.Any() ? (resultList.ElementAtOrDefault(0) ?? string.Empty) : string.Empty;

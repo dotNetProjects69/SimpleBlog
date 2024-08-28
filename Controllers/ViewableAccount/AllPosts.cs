@@ -27,7 +27,7 @@ namespace SimpleBlog.Controllers.ViewableAccount
                 PostList = GetPosts("*", viewableId)
             };
 
-            foreach (var postModel in postListViewModel.PostList)
+            foreach (IPostModel? postModel in postListViewModel.PostList)
             {
                 postModel.IsLiked = IsLikedBy(_sessionHandler.SessionOwnerId, postModel);
             }

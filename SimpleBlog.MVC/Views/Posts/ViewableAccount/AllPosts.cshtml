@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SimpleBlog.MVC.Validation.ViewModels.Post
+@using SimpleBlog.MVC.Validation.ViewModels
+@model (List<ValidationErrorModel>, List<ViewableAccountPostModel>);
+
+
+<div class="row justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+        <div class="posts-container">
+            @foreach (ViewableAccountPostModel p in Model.Item2)
+            {
+                <div class="post">
+                    <a style="color: black; font-size: 40px"
+                       asp-controller = "AllPosts"
+                       asp-action = "ViewPost"
+                       asp-route-id = "@p.PostId"
+                       asp-route-nickname = "@p.AccountNickname">@p.Title</a>
+                    <p style="font-size: 30px">@p.Body</p>
+                    <p class="text-muted">@p.CreatedAt.ToString("dd MMMM yyyy HH:mm")</p>
+                    <div style="display: flex; align-items: center; margin-top: 15px;">
+                        <a asp-controller = "Post"
+                           asp-action = "LikeButtonClicked"
+                           asp-route-viewableNickname = "@p.AccountNickname"
+                           asp-route-postId = "@p.PostId" 
+                           style="text-decoration: none; color: inherit; cursor: pointer">
+                            <img src="@Url.Content(p.IsLiked 
+                                          ? "/Images/Icons/Like/Like Active.png" 
+                                          : "/Images/Icons/Like/Like Inactive.png")"
+                                 title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+                        </a>
+                        <span style="font-size: 25px; color: #333; font-weight: lighter;">
+                            @p.LikesCount
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

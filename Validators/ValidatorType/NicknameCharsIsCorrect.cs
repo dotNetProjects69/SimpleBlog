@@ -14,11 +14,11 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<INickname>(baseModel);
+            INickname? model = TryTransformTo<INickname>(baseModel);
             string pattern = "^[a-z0-9_]+$";
             bool isValid = Regex.IsMatch(model.Nickname, pattern);
             return isValid
-                ? new ErrorModel()
+                ? ErrorModel.Success
                 : new(HttpStatusCode.BadRequest, "Nickname must contains only a-z, 0-9 and _");
         }
     }

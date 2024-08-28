@@ -8,15 +8,7 @@ namespace SimpleBlog.Models.Authentication
         public string Nickname { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public IErrorModel Error { get; set; } = new ErrorModel();
+        public IErrorModel Error { get; set; } = ErrorModel.Success;
         public Guid UserId { get; set; }
-
-        public void Debug()
-        {
-            Console.WriteLine($"Id - {UserId}\n" +
-                              $"Email - {Email}\n" +
-                              $"Password - {Password}\n" +
-                              $"Nickname - {Nickname}\n");
-        }
     }
 }

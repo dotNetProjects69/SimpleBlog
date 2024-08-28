@@ -25,9 +25,9 @@ namespace SimpleBlog.Validators.ValidatorType
 
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<IPassword>(baseModel);
+            IPassword? model = TryTransformTo<IPassword>(baseModel);
             return model.Password.Length >= _length
-                ? new ErrorModel()
+                ? ErrorModel.Success
                 : new(HttpStatusCode.BadRequest, 
                       $"The password must be at least {_length} characters long");
         }

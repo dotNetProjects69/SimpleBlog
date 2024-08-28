@@ -13,12 +13,12 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<INickname>(baseModel);
+            INickname? model = TryTransformTo<INickname>(baseModel);
             bool result = !AccountExist("NickName", model.Nickname);
 
             return result
                 ? new(HttpStatusCode.NotFound, "An account with such a nickname does not exist")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

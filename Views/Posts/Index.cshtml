@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Blog";
 }
+@using SimpleBlog.Models.Interfaces.PostModelParts
 @model PostViewModel
 
 <div class="text-center">
@@ -20,7 +21,7 @@
 <div class="row justify-content-center">
     <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
         <div class="posts-container">
-            @foreach (var p in Model.PostList)
+            @foreach (IPostModel? p in Model.PostList)
             {
                 <div class="post">
                     <a style="color: black; font-size: 40px"

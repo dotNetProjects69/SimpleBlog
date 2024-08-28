@@ -1,0 +1,62 @@
+﻿@using FluentValidation.Results
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SimpleBlog.MVC.Validation.ViewModels.Authentication;
+@using SimpleBlog.MVC.Models;
+@model MainViewModel<SignInModel>
+
+<form id="form-action"
+      method="post"
+      class="form-horizontal"
+      role="form">
+
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Email" class="form-label"></label>
+            <input type="text" asp-for="Model.Email" class="form-control"/>
+        </div>
+    </div>
+
+    @if (!Model.Result.IsValid)
+    {
+        foreach (ValidationFailure? validationFailure
+                 in Model.Result.Errors.Where(e => e is { PropertyName: "Email" }))
+        {
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+                    <p style="color: red">@validationFailure.ErrorMessage</p>
+                </div>
+            </div>
+        }
+    }
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Password" class="form-label"></label>
+            <input type="password" asp-for="Model.Password" class="form-control"/>
+        </div>
+    </div>
+    @if (!Model.Result.IsValid)
+    {
+        foreach (ValidationFailure? validationFailure
+                 in Model.Result.Errors.Where(failure =>
+                     failure is { PropertyName: nameof(Model.Model.Password) }))
+        {
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+                    <p style="color: red">@validationFailure.ErrorMessage</p>
+                </div>
+            </div>
+        }
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
+            <input asp-controller="SignInByEmail"
+                   asp-action="LogIn"
+                   type="submit"
+                   id="LogInButton"
+                   class="btn btn-success"
+                   value="Sign In"/>
+        </div>
+    </div>
+
+</form>

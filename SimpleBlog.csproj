@@ -13,6 +13,11 @@
     <None Include="wwwroot\Images\Icons\Home.png" />
     <None Remove="SimpleBlog.Data\**" />
     <None Remove="SimpleBlog.Common\**" />
+    <None Remove="SimpleBlog.Common\Models\**" />
+    <None Remove="SimpleBlog.Services\**" />
+    <None Remove="SimpleBlog.MVC\**" />
+    <None Remove="SimpleBlog.Validation\**" />
+    <None Remove="SimpleBlog.MVC.Validation\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,16 +58,31 @@
   <ItemGroup>
     <Compile Remove="SimpleBlog.Data\**" />
     <Compile Remove="SimpleBlog.Common\**" />
+    <Compile Remove="SimpleBlog.Common\Models\**" />
+    <Compile Remove="SimpleBlog.Services\**" />
+    <Compile Remove="SimpleBlog.MVC\**" />
+    <Compile Remove="SimpleBlog.Validation\**" />
+    <Compile Remove="SimpleBlog.MVC.Validation\**" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Remove="SimpleBlog.Data\**" />
     <EmbeddedResource Remove="SimpleBlog.Common\**" />
+    <EmbeddedResource Remove="SimpleBlog.Common\Models\**" />
+    <EmbeddedResource Remove="SimpleBlog.Services\**" />
+    <EmbeddedResource Remove="SimpleBlog.MVC\**" />
+    <EmbeddedResource Remove="SimpleBlog.Validation\**" />
+    <EmbeddedResource Remove="SimpleBlog.MVC.Validation\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="SimpleBlog.Data\**" />
     <Content Remove="SimpleBlog.Common\**" />
+    <Content Remove="SimpleBlog.Common\Models\**" />
+    <Content Remove="SimpleBlog.Services\**" />
+    <Content Remove="SimpleBlog.MVC\**" />
+    <Content Remove="SimpleBlog.Validation\**" />
+    <Content Remove="SimpleBlog.MVC.Validation\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +92,30 @@
     <_ContentIncludedByDefault Remove="SimpleBlog.Common\obj\project.assets.json" />
     <_ContentIncludedByDefault Remove="SimpleBlog.Common\obj\project.packagespec.json" />
     <_ContentIncludedByDefault Remove="SimpleBlog.Common\obj\SimpleBlog.Common.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Services\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Services\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Services\obj\SimpleBlog.Services.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\appsettings.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\obj\SimpleBlog.MVC.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Properties\launchSettings.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\Home\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\Home\Privacy.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\Shared\Error.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\Shared\_Layout.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\_ViewImports.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC\Views\_ViewStart.cshtml" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Validation\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Validation\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.Validation\obj\SimpleBlog.Validation.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC.Validation\bin\Debug\net8.0\SimpleBlog.MVC.Validation.deps.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC.Validation\obj\Debug\net8.0\SimpleBlog.MVC.Validation.sourcelink.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC.Validation\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC.Validation\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleBlog.MVC.Validation\obj\SimpleBlog.MVC.Validation.csproj.nuget.dgspec.json" />
   </ItemGroup>
 
   <ItemGroup>

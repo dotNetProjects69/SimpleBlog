@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SafeResult;
 using SimpleBlog.Data.Context;
 using SimpleBlog.Data.Entities;
 using SimpleBlog.Data.Repositories.Abstract;
 
 namespace SimpleBlog.Data.Repositories;
 
-public class PostRepository : IRepository<Post>
+public class PostRepository : IPostRepository
 {
     private readonly AppDbContext _context;
 
@@ -15,24 +14,33 @@ public class PostRepository : IRepository<Post>
         _context = context;
     }
 
-    public async Task<List<SafeResult<Post>>> GetAll()
+    public Task<List<Post>> GetAll()
     {
-        return await _context.Posts.ToSafeResultListAsync();
+        return _context.Posts.AsNoTracking().ToListAsync();
     }
 
-    public async Task<SafeResult<Post>> GetById(int id)
+    public async Task<List<Post>> GetAllByAccountId(int id)
+    {
+        return await _context.Posts.Where(p => p.Owner != null && p.Owner.AccountId == id).ToListAsync();
+    }
+
+    public async Task<Post?> GetById(int id)
     {
         Post? post = await _context
             .Posts
+            .AsNoTracking()
             .FirstOrDefaultAsync(l => l.PostId == id);
-        
-        return post is null 
-            ? SafeResult<Post>.GetErrorInstance("Not Found") 
-            : SafeResult<Post>.GetResultInstance(post);
+
+        return post;
     }
 
     public async Task Add(Post entity)
     {
+        if (_context.Entry(entity.Owner).State == EntityState.Detached)
+        {
+            _context.Attach(entity.Owner);
+        }
+        
         await _context.AddAsync(entity);
         await _context.SaveChangesAsync();
     }

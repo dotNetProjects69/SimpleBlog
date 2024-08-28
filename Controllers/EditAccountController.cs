@@ -41,7 +41,7 @@ namespace SimpleBlog.Controllers
                 return Index(model);
             using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
-                using var command = connection.CreateCommand();
+                using SqliteCommand? command = connection.CreateCommand();
                 {
                     
                     connection.Open();
@@ -69,7 +69,7 @@ namespace SimpleBlog.Controllers
         {
             using (SqliteConnection connection = new(GetAccountsDataPath()))
             {
-                using (var command = connection.CreateCommand())
+                using (SqliteCommand? command = connection.CreateCommand())
                 {
                     connection.Open();
                     command.CommandText = $"UPDATE AuthData SET " +

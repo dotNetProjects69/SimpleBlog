@@ -1,0 +1,38 @@
+﻿@using SimpleBlog.MVC.Validation.ViewModels.Account;
+@model UpdatingAccountModel
+
+<h2>Name: @Model.Name</h2>
+
+@if(Model.Surname != string.Empty)
+{
+	<p>Surname: @Model.Surname</p>
+}
+
+<p>Email: @Model.Email</p>
+<p>Date of birth: @Model.DateOfBirth.ToString("dd-MM-yyyy")</p>
+<p>@Model.Nickname</p>
+
+<div class="btn-group-vertical">
+    <button type="button"
+            onclick="location.href='@Url.Action("Edit", "PersonalAccount")'"
+            class="btn btn-success"
+            style="background-color: darkorange; margin-bottom: 10px">
+        Edit
+    </button>
+
+    <button type="button"
+            onclick="location.href='@Url.Action("LogOut", "PersonalAccount")'"
+            class="btn btn-success"
+            style="background-color: darkblue; margin-bottom: 10px">
+        Log Out
+    </button>
+
+    <button type="button"
+            onclick="location.href='@Url.Action("Delete", "PersonalAccount")'"
+            class="btn btn-success"
+            style="background-color: red; margin-bottom: 10px">
+        Delete
+    </button>
+</div>
+
+

@@ -9,7 +9,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
         internal static string CreateTemplate(params string[] columnNames)
         {
             List<string> template = [];
-            for (var i = 0; i < columnNames.Length; i++) 
+            for (int i = 0; i < columnNames.Length; i++) 
                 template.Insert(i, columnNames[i].Trim());
 
             StringBuilder stringBuilder = new();
@@ -20,7 +20,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
         internal static string CreateValuesForm(params string[] columnValues)
         {
             List<string> values = [];
-            for (var i = 0; i < columnValues.Length; i++)
+            for (int i = 0; i < columnValues.Length; i++)
                 values.Insert(i, $"'{columnValues[i].Trim()}'");
 
             StringBuilder stringBuilder = new();

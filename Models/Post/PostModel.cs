@@ -13,6 +13,6 @@ namespace SimpleBlog.Models.Post
         public string Nickname { get; set; } = string.Empty;
         public int Likes { get; set; }
         public bool IsLiked { get; set; }
-        public IErrorModel Error { get; set; } = new ErrorModel();
+        public IErrorModel Error { get; set; } = ErrorModel.Success;
     }
 }

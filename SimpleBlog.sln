@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafeResult", "..\Libs\DotNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBlog.Common", "SimpleBlog.Common\SimpleBlog.Common.csproj", "{736064A9-DC81-47D8-99DB-883E9DF6B9AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBlog.Services", "SimpleBlog.Services\SimpleBlog.Services.csproj", "{954262F2-DB6C-4C01-87B3-53E7AC376B44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBlog.MVC", "SimpleBlog.MVC\SimpleBlog.MVC.csproj", "{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBlog.MVC.Validation", "SimpleBlog.MVC.Validation\SimpleBlog.MVC.Validation.csproj", "{63F09ED0-950D-400B-9986-750F3F8850ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +56,24 @@ Global
 		{736064A9-DC81-47D8-99DB-883E9DF6B9AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{736064A9-DC81-47D8-99DB-883E9DF6B9AA}.SqlMigration|Any CPU.ActiveCfg = Debug|Any CPU
 		{736064A9-DC81-47D8-99DB-883E9DF6B9AA}.SqlMigration|Any CPU.Build.0 = Debug|Any CPU
+		{954262F2-DB6C-4C01-87B3-53E7AC376B44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{954262F2-DB6C-4C01-87B3-53E7AC376B44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{954262F2-DB6C-4C01-87B3-53E7AC376B44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{954262F2-DB6C-4C01-87B3-53E7AC376B44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{954262F2-DB6C-4C01-87B3-53E7AC376B44}.SqlMigration|Any CPU.ActiveCfg = Debug|Any CPU
+		{954262F2-DB6C-4C01-87B3-53E7AC376B44}.SqlMigration|Any CPU.Build.0 = Debug|Any CPU
+		{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}.SqlMigration|Any CPU.ActiveCfg = Debug|Any CPU
+		{116B3A68-DD25-47B5-A6E8-5E40E0C940AF}.SqlMigration|Any CPU.Build.0 = Debug|Any CPU
+		{63F09ED0-950D-400B-9986-750F3F8850ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63F09ED0-950D-400B-9986-750F3F8850ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63F09ED0-950D-400B-9986-750F3F8850ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63F09ED0-950D-400B-9986-750F3F8850ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63F09ED0-950D-400B-9986-750F3F8850ED}.SqlMigration|Any CPU.ActiveCfg = Debug|Any CPU
+		{63F09ED0-950D-400B-9986-750F3F8850ED}.SqlMigration|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

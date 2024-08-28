@@ -14,18 +14,7 @@ namespace SimpleBlog.Models.Account
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Nickname { get; set; } = string.Empty;
-        public IErrorModel Error { get; set; } = new ErrorModel();
+        public IErrorModel Error { get; set; } = ErrorModel.Success;
         public Guid UserId { get; set; }
-
-        public void Debug()
-        {
-            Console.WriteLine($"Id - {UserId}\n" +
-                              $"Name - {Name}\n" +
-                              $"Surname - {Surname}\n" +
-                              $"Date of birth - {DateOfBirth}\n" +
-                              $"Email - {Email}\n" +
-                              $"Password - {Password}\n" +
-                              $"nickname - {Nickname}");
-        }
     }
 }

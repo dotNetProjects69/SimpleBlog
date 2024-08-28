@@ -18,9 +18,6 @@ namespace SimpleBlog.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.7")
-                .HasAnnotation("Proxies:ChangeTracking", false)
-                .HasAnnotation("Proxies:CheckEquality", false)
-                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -48,6 +45,10 @@ namespace SimpleBlog.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
@@ -64,9 +65,6 @@ namespace SimpleBlog.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LikeId"));
-
-                    b.Property<int>("AccountReceiverId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("AccountSenderId")
                         .HasColumnType("integer");
@@ -90,15 +88,15 @@ namespace SimpleBlog.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PostId"));
 
-                    b.Property<int>("AccountOwnerAccountId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OwnerAccountId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -109,7 +107,7 @@ namespace SimpleBlog.Data.Migrations
 
                     b.HasKey("PostId");
 
-                    b.HasIndex("AccountOwnerAccountId");
+                    b.HasIndex("OwnerAccountId");
 
                     b.ToTable("Posts");
                 });
@@ -142,13 +140,13 @@ namespace SimpleBlog.Data.Migrations
 
             modelBuilder.Entity("SimpleBlog.Data.Entities.Post", b =>
                 {
-                    b.HasOne("SimpleBlog.Data.Entities.Account", "AccountOwner")
+                    b.HasOne("SimpleBlog.Data.Entities.Account", "Owner")
                         .WithMany("Posts")
-                        .HasForeignKey("AccountOwnerAccountId")
+                        .HasForeignKey("OwnerAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AccountOwner");
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("SimpleBlog.Data.Entities.PostLike", b =>

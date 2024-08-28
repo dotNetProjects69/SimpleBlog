@@ -23,7 +23,7 @@ namespace SimpleBlog.Controllers
         public IActionResult Search(Search search)
         {
             search.Result.Clear();
-            var result = 
+            IReadOnlyCollection<IReadOnlyCollection<string>>? result = 
                 SelectAllFromTable($"WHERE NickName LIKE '%{search.Nickname}%'");
             foreach (IReadOnlyCollection<string> account in result)
             {

@@ -106,7 +106,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
 
             string selectCommand = $"SELECT EXISTS(SELECT 1 FROM '{tableName}' WHERE {filterName} = '{filterParam}')";
 
-            using var command = new SqliteCommand(selectCommand, connection);
+            using SqliteCommand? command = new SqliteCommand(selectCommand, connection);
             long res = (long)(command.ExecuteScalar() ?? 0);
 
             return res > 0;
@@ -180,7 +180,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
         private bool TableExist(string dbFilePath)
         {
             using SqliteConnection connection = new(dbFilePath);
-            using var command = connection.CreateCommand();
+            using SqliteCommand? command = connection.CreateCommand();
             {
                 connection.Open();
 
@@ -201,7 +201,7 @@ namespace SimpleBlog.Controllers.Extensions.Sql
         internal void InsertDataToTable(string tableName, string firstParam, DateTime dateTime)
         {
             using SqliteConnection connection = new($"Data Source={_dbRelativeFilePath}");
-            using var command = connection.CreateCommand();
+            using SqliteCommand? command = connection.CreateCommand();
             {
                 connection.Open();
                 command.CommandText = $"INSERT INTO [{tableName}] {_templates[_dbType][Insert]} " +

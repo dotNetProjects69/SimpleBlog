@@ -14,12 +14,12 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<INickname>(baseModel);
+            INickname? model = TryTransformTo<INickname>(baseModel);
             bool result = AccountExist("NickName", model.Nickname);
 
             return result
                 ? new(HttpStatusCode.Conflict, "This nickname already used")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

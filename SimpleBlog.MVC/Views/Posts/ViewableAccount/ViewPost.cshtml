@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SimpleBlog.MVC.Validation.ViewModels.Post
+@model ViewableAccountPostModel
+
+<div class="post">
+    <h2>@Model.Title</h2>
+    <h5>Created At: @Model.CreatedAt </h5>
+    <h5>Last Modified At: @Model.UpdatedAt</h5>
+    <p>@Model.Body</p>
+    <div style="display: flex; align-items: center; margin-top: 15px;">
+        <a asp-controller="Post"
+           asp-action="LikeButtonClicked"
+           asp-route-viewableNickname="@Model.AccountNickname"
+           asp-route-postId = "@Model.PostId" 
+           style="text-decoration: none; color: inherit; cursor: pointer">
+            <img src="@Url.Content(Model.IsLiked 
+                          ? "/Images/Icons/Like/Like Active.png" 
+                          : "/Images/Icons/Like/Like Inactive.png")"
+                 title="Like" alt="Like" width="25" style="margin-right: 8px;" />
+        </a>
+        <span style="font-size: 25px; color: #333; font-weight: lighter;">
+            @Model.LikesCount
+        </span>
+    </div>
+</div>

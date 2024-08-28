@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SimpleBlog.MVC.Validation.ViewModels.Post
+@model PostModel
+
+<div class="post">
+    <h2>@Model.Title</h2>
+    <h5>Created At: @Model.CreatedAt.ToLocalTime() </h5>
+    <h5>Last Modified At: @Model.UpdatedAt.ToLocalTime()</h5>
+    <p>@Model.Body</p>
+</div>
+
+<div class="post-actions">
+    <ul>
+        <li>
+            <a class="btn btn-primary"
+               asp-controller="Posts"
+               asp-action="Edit"
+               asp-route-id="@Model.Id">
+                Update
+            </a>
+        </li>
+        <li>
+            <a class="btn btn-danger"
+               asp-controller="Posts"
+               asp-action="Delete"
+               asp-route-id="@Model.Id">
+                Delete
+            </a>
+        </li>
+    </ul>
+</div>

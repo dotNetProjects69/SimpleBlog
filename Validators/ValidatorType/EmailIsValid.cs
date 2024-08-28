@@ -14,11 +14,11 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<IEmail>(baseModel);
+            IEmail model = TryTransformTo<IEmail>(baseModel);
             bool result = IsValidEmail(model.Email);
             return !result
                 ? new(HttpStatusCode.BadRequest, "Email is not valid")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
 
         private static bool IsValidEmail(string email)

@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SafeResult;
 using SimpleBlog.Data.Context;
 using SimpleBlog.Data.Entities;
 using SimpleBlog.Data.Repositories.Abstract;
 
 namespace SimpleBlog.Data.Repositories;
 
-public class PostLikeRepository : IRepository<PostLike>
+public class PostLikeRepository : IPostLikeRepository
 {
     private readonly AppDbContext _context;
 
@@ -15,20 +14,19 @@ public class PostLikeRepository : IRepository<PostLike>
         _context = context;
     }
     
-    public async Task<List<SafeResult<PostLike>>> GetAll()
+    public async Task<List<PostLike>> GetAll()
     {
-        return await _context.PostLikes.ToSafeResultListAsync();
+        return await _context.PostLikes.AsNoTracking().ToListAsync();
     }
 
-    public async Task<SafeResult<PostLike>> GetById(int id)
+    public async Task<PostLike?> GetById(int id)
     {
         PostLike? postLike = await _context
             .PostLikes
+            .AsNoTracking()
             .FirstOrDefaultAsync(l => l.PostLikeId == id);
         
-        return postLike is null 
-            ? SafeResult<PostLike>.GetErrorInstance("Not Found") 
-            : SafeResult<PostLike>.GetResultInstance(postLike);
+        return postLike;
     }
 
     public async Task Add(PostLike entity)
@@ -47,5 +45,12 @@ public class PostLikeRepository : IRepository<PostLike>
     {
         _context.Remove(entity);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<PostLike>> GetAllPostLikeByPostId(int id)
+    {
+        return await _context.PostLikes
+            .AsNoTracking()
+            .Where(p => p.PostId == id).ToListAsync();
     }
 }

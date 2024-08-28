@@ -1,0 +1,86 @@
+﻿@using FluentValidation.Results
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SimpleBlog.MVC.Validation.ViewModels.Account
+@using SimpleBlog.MVC.Models;
+@model MainViewModel<UpdatingAccountModel>
+
+<form asp-action="Update"
+      asp-controller="EditAccount"
+      id="form-action"
+      method="post"
+      class="form-horizontal"
+      role="form">
+
+
+    <div class="row justify-content-center" hidden>
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <input type="hidden" asp-for="Model.Id" class="form-control" value="@Model.Model.Id"/>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Name" class="form-label">
+                Name<span style="color: red;">*</span>
+            </label>
+            <input asp-for="Model.Name" class="form-control" value="@Model.Model.Name"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Surname" class="form-label"></label>
+            <input asp-for="Model.Surname" class="form-control" value="@Model.Model.Surname"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Email" class="form-label">
+                Email<span style="color: red;">*</span>
+            </label>
+            <input type="email" asp-for="Model.Email" class="form-control" value="@Model.Model.Email"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Nickname" class="form-label">
+                Nickname<span style="color: red;">*</span>
+            </label>
+            <input type="text" asp-for="Model.Nickname" class="form-control" value="@Model.Model.Nickname"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.Password" class="form-label">
+                Password<span style="color: red;">*</span>
+            </label>
+            <input type="password" asp-for="Model.Password" class="form-control" value="@Model.Model.Password"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <label asp-for="Model.DateOfBirth" class="form-label">Date of Birth</label>
+            <input type="date" asp-for="Model.DateOfBirth" class="form-control"
+                   value="@Model.Model.DateOfBirth.ToString("yyyy-MM-dd")"/>
+        </div>
+    </div>
+    <div>
+        @Model.Result.IsValid
+    </div>
+    @if (!Model.Result.IsValid)
+    {
+        foreach (ValidationFailure? validationFailure in Model.Result.Errors)
+        {
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+                    <p style="color: red">@validationFailure.ErrorMessage</p>
+                </div>
+            </div>
+        }
+    }
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
+            <input type="submit" id="form-button" class="btn btn-success" value="Save"/>
+        </div>
+    </div>
+
+</form>

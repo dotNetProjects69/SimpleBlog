@@ -13,12 +13,12 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<IPassword>(baseModel);
+            IPassword? model = TryTransformTo<IPassword>(baseModel);
             bool result = model.Password.Contains(' ');
 
             return result
                 ? new(HttpStatusCode.BadRequest, "Password must not contain gaps")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

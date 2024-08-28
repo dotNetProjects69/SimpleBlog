@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using System.Net;
 using SimpleBlog.Models;
 using SimpleBlog.Models.Interfaces;
 using SimpleBlog.Models.Interfaces.AccountModelParts;
 using SimpleBlog.Validators.Base;
-using System.Net;
 using static SimpleBlog.Validators.Base.TypeTransformer;
 
 namespace SimpleBlog.Validators.ValidatorType
@@ -12,11 +11,11 @@ namespace SimpleBlog.Validators.ValidatorType
     {
         private protected override IErrorModel ValidateLogic(IAccountModelPart baseModel)
         {
-            var model = TryTransformTo<IName>(baseModel);
+            IName model = TryTransformTo<IName>(baseModel);
             bool result = string.IsNullOrWhiteSpace(model.Name);
             return result
                 ? new(HttpStatusCode.BadRequest, "Name field is blank")
-                : new ErrorModel();
+                : ErrorModel.Success;
         }
     }
 }

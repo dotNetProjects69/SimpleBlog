@@ -5,7 +5,9 @@ namespace SimpleBlog.Models
 {
     public class ErrorModel : IErrorModel
     {
-        public ErrorModel()
+        public static ErrorModel Success => new ();
+        
+        private ErrorModel()
         {
             StatusCode = HttpStatusCode.OK;
             Message = string.Empty;
